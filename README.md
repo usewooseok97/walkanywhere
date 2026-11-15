@@ -6,8 +6,7 @@
 
 - `/` — 산책 화면 (메인)
 - `/about` — 소개 페이지 (공감 → 갈등 → 해결 스토리 + 미니 데모)
-- `/stats` — 사람들이 어디를 걷고 싶어 하는지, 어떤 걸음으로 걷는지
-- `/admin` — 관리자: 불편사항 보기, 사용자 비밀번호 초기화, 관리자 비밀번호 변경 (처음 비밀번호 `admin1234`, 로그인 후 바꾸세요)
+- `/admin` — 관리자 전용: 불편사항, 통계(어디를 걷고 싶어 하는지·어떤 걸음으로 걷는지·어떤 간판을 누르는지), 사용자(비밀번호 초기화), 관리자 비밀번호 변경. 처음 비밀번호 `admin1234`, 로그인 후 바꾸세요. `/stats`는 여기로 넘어갑니다.
 
 ## 흐름
 
@@ -49,7 +48,8 @@
 ```
 index.html   메인 산책 화면          js/app.js      메인 흐름(선택지·전환·도착·저장·불편사항)
 about.html   소개 페이지             js/about.js    소개 페이지 데모
-stats.html   사용 통계               js/stats.js
+stats.html   → /admin 으로 넘김        js/statsview.js 통계 표
+admin.html   관리자 화면             js/admin.js
 css/base.css 토큰·버튼·HUD           js/world.js    산책 엔진(문장→세계, 끝없는 길, 청크 스트리밍, 시간대, 목적지)
 css/app.css  메인 화면               js/controls.js 조작(포인터 잠금·키·속도·시각·간판 클릭)
 css/about.css 소개 페이지            js/audio.js    환경음·발소리 합성
@@ -103,7 +103,7 @@ DB가 없을 때도 산책은 정상 동작하고, 저장·통계만 "아직 연
 | GET | `/api/walks?user=아이디` | 그 사람이 저장한 길 |
 | GET | `/api/admin?what=summary\|users` | 관리자 전용 |
 | POST | `/api/track` | 사용 사건 기록 (open, arrive, speed, walk, look, link, time, save, start) |
-| GET | `/api/stats` | 집계 |
+| GET | `/api/stats` | 집계 (관리자 토큰) |
 | POST | `/api/feedback` | `{ message, contact?, page? }` 불편사항 |
 
 ## 이 데모의 범위

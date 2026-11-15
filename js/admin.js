@@ -1,4 +1,5 @@
 // 관리자 화면: 로그인(admin) → 불편사항 · 사용자(비밀번호 초기화) · 요약 · 비밀번호 바꾸기
+import { renderStats } from './statsview.js';
 const out = document.getElementById('out');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const PW_RE = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*._-]{8,64}$/;
@@ -31,7 +32,7 @@ function renderLogin(msg = '') {
 }
 
 async function renderAdmin() {
-  const [sum, fb, us] = await Promise.all([api('/api/admin?what=summary'), api('/api/feedback'), api('/api/admin?what=users')]);
+  const [sum, fb, us, st] = await Promise.all([api('/api/admin?what=summary'), api('/api/feedback'), api('/api/admin?what=users'), api('/api/stats')]);
   if (sum.status === 401 || sum.status === 403) { token = ''; sessionStorage.removeItem('wa-admin-token'); return renderLogin('다시 로그인해 주세요.'); }
   const t = sum.summary || {};
   out.innerHTML = `
@@ -42,17 +43,20 @@ async function renderAdmin() {
       <div class="total"><b>${t.feedback ?? 0}</b><span>불편사항</span></div>
       <div class="total"><b>${t.events ?? 0}</b><span>기록된 사건</span></div>
     </div>
-    <h2>불편사항</h2>
+    <nav class="tabs"><a href="#feedback">불편사항</a><a href="#stats">통계</a><a href="#users">사용자</a><a href="#password">비밀번호</a></nav>
+    <h2 id="feedback">불편사항</h2>
     ${(fb.feedback || []).length ? `<table><thead><tr><th>언제</th><th>내용</th><th>연락처</th><th>페이지</th></tr></thead><tbody>
       ${fb.feedback.map(f => `<tr><td>${new Date(f.created_at).toLocaleString('ko-KR')}</td><td class="msg">${esc(f.message)}</td><td>${esc(f.contact || '')}</td><td>${esc(f.page || '')}</td></tr>`).join('')}
     </tbody></table>` : '<p class="empty">아직 접수된 불편사항이 없습니다.</p>'}
-    <h2>사용자</h2>
+    <h2 id="stats">통계</h2>
+    <div class="stats">${st.ok ? renderStats(st) : `<p class="empty">${esc(st.message || '통계를 불러오지 못했습니다.')}</p>`}</div>
+    <h2 id="users">사용자</h2>
     ${(us.users || []).length ? `<table><thead><tr><th>아이디</th><th>닉네임</th><th>역할</th><th>저장한 길</th><th>가입</th><th></th></tr></thead><tbody>
       ${us.users.map(u => `<tr><td>${esc(u.id)}</td><td>${esc(u.nickname)}</td><td>${esc(u.role)}</td><td>${u.walks}</td><td>${new Date(u.created_at).toLocaleDateString('ko-KR')}</td>
         <td>${u.role === 'admin' ? '' : `<button class="btn btn-ghost btn-sm reset" data-id="${esc(u.id)}">비밀번호 초기화</button>`}</td></tr>`).join('')}
     </tbody></table>` : '<p class="empty">아직 가입한 사람이 없습니다.</p>'}
     <p class="status" id="reset-st"></p>
-    <h2>관리자 비밀번호 바꾸기</h2>
+    <h2 id="password">관리자 비밀번호 바꾸기</h2>
     <form class="pw" id="pwf">
       <label>현재 비밀번호 <input id="old" type="password" autocomplete="current-password" /></label>
       <label>새 비밀번호 (영문+숫자 8자 이상) <input id="new" type="password" autocomplete="new-password" /></label>

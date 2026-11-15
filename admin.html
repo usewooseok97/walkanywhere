@@ -34,14 +34,26 @@
     .empty { color: var(--dawn-muted); }
     .pw { display: grid; gap: .6rem; max-width: 22rem; }
     a { color: var(--dawn-ink); }
+    .tabs { display: flex; gap: .4rem; flex-wrap: wrap; margin: 1.5rem 0 0; }
+    .tabs a { padding: .35rem .9rem; border-radius: 999px; border: 1px solid rgba(27, 33, 64, .3); text-decoration: none; font-size: var(--t--1); }
+    .tabs a:hover { background: rgba(27, 33, 64, .08); }
+    .stats section { margin: 1.4rem 0; }
+    .stats h3 { font-size: var(--t-0); margin: 0 0 .6rem; }
+    .bars { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; }
+    .bars li { display: grid; grid-template-columns: minmax(8rem, 16rem) 1fr auto; gap: .8rem; align-items: center; font-size: var(--t--1); }
+    .bars .bar { height: 10px; border-radius: 5px; background: rgba(27, 33, 64, .12); overflow: hidden; }
+    .bars .bar i { display: block; height: 100%; background: var(--lamp-deep); border-radius: 5px; }
+    .bars .n { font-variant-numeric: tabular-nums; color: var(--dawn-muted); }
+    .foot { font-size: var(--t--1); color: var(--dawn-muted); }
+    h2 { scroll-margin-top: 1rem; }
   </style>
 </head>
 <body>
   <main class="wrap">
     <h1>관리자</h1>
-    <p class="lede">불편사항과 사용자, 통계를 봅니다. 처음 비밀번호는 <code>admin1234</code> 이고, 로그인한 뒤 꼭 바꿔 주세요.</p>
+    <p class="lede">불편사항, 통계(어디를 걷고 싶어 하는지·어떤 걸음으로 걷는지·어떤 간판을 누르는지), 사용자를 봅니다. 처음 비밀번호는 <code>admin1234</code> 이고, 로그인한 뒤 꼭 바꿔 주세요.</p>
     <div id="out"></div>
-    <p class="lede" style="margin-top:2rem"><a href="/">첫 화면으로</a> · <a href="/stats">통계 보기</a></p>
+    <p class="lede" style="margin-top:2rem"><a href="/">첫 화면으로</a></p>
   </main>
   <script type="module" src="./js/admin.js"></script>
 </body>

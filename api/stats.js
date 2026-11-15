@@ -1,11 +1,13 @@
-// GET /api/stats → 사람들이 어디를 걷고 싶어 하는지, 어떤 속도로 걷는지, 어떤 간판을 누르는지
-import { getSql, ensureSchema, send, noDb } from './_lib/db.js';
+// GET /api/stats (Authorization: Bearer 관리자 토큰) → 사람들이 어디를 걷고 싶어 하는지, 어떤 걸음으로 걷는지, 어떤 간판을 누르는지
+import { getSql, ensureSchema, send, noDb, userFromToken } from './_lib/db.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') { res.setHeader('Allow', 'GET'); return send(res, 405, { error: 'method_not_allowed' }); }
   const sql = getSql();
   if (!sql) return noDb(res);
   await ensureSchema(sql);
+  const me = await userFromToken(sql, req);
+  if (!me || me.role !== 'admin') return send(res, 403, { error: 'forbidden', message: '관리자만 볼 수 있습니다.' });
 
   const [themes, prompts, speedPicks, walks, links, totals, hours, saved] = await Promise.all([
     sql`SELECT theme, count(*)::int AS n FROM events WHERE kind = 'open' AND theme IS NOT NULL GROUP BY theme ORDER BY n DESC`,

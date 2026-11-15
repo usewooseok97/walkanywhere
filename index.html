@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Walk Anywhere — 문장 하나면, 당신이 걷고 싶은 세계가 열립니다</title>
+  <meta name="description" content="텍스트 한 줄로 AI가 3D 공간을 만들고, 앱 설치나 장비 없이 웹 브라우저에서 1인칭으로 직접 걸어보는 서비스." />
+  <meta name="theme-color" content="#151b30" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" />
+  <link rel="stylesheet" href="./styles.css" />
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- ===================== 내비게이션 ===================== -->
+  <header class="nav">
+    <div class="container">
+      <a class="wordmark" href="#top">Walk Anywhere</a>
+      <nav aria-label="페이지 이동">
+        <ul class="nav-links">
+          <li><a href="#empathy">이야기</a></li>
+          <li><a href="#resolve">체험하기</a></li>
+          <li><a href="#how">작동 방식</a></li>
+        </ul>
+      </nav>
+      <a class="btn btn-lamp" href="#resolve" data-go-prompt>지금 걸어보기</a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ===================== 1장 공감 ===================== -->
+    <section class="act act-empathy" id="empathy" aria-labelledby="empathy-title">
+      <div class="container hero-grid">
+        <div>
+          <p class="chapter"><b>1장</b> 공감</p>
+          <h1 class="story story-xl" id="empathy-title">
+            가보고 싶은 곳은 많은데,<br />시간도 돈도 없다.
+          </h1>
+          <p class="lede">
+            사라져버린 옛 동네, 멀리 있는 여행지, 상상 속의 장소.
+            사진과 영상으로는 늘 ‘유리창 너머로 구경하는’ 느낌만 남는다.
+          </p>
+          <p class="body-copy">
+            직접 거닐어 보고 싶다는 마음은 어디 가지 않는다.
+            채워지지 않은 채, 그대로 남아 있을 뿐이다.
+          </p>
+          <a class="scroll-cue" href="#conflict">그런데 무엇이 가로막고 있을까</a>
+        </div>
+
+        <aside class="hero-aside" aria-label="유리창 너머의 풍경">
+          <div class="window">
+            <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <defs>
+                <linearGradient id="sky-a" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#2a3170" />
+                  <stop offset=".55" stop-color="#7b5f90" />
+                  <stop offset="1" stop-color="#e59a67" />
+                </linearGradient>
+              </defs>
+              <rect width="400" height="500" fill="url(#sky-a)" />
+              <circle cx="292" cy="272" r="34" fill="#f6c77a" />
+              <path d="M0 330 C 80 290, 140 322, 210 300 S 340 262, 400 300 V 500 H 0 Z" fill="#3a3f6f" />
+              <path d="M0 382 C 70 352, 150 392, 230 362 S 350 332, 400 362 V 500 H 0 Z" fill="#242a4d" />
+              <path d="M0 432 C 90 412, 160 447, 250 422 S 340 402, 400 427 V 500 H 0 Z" fill="#151a30" />
+              <path d="M186 500 C 200 470, 168 455, 180 430 S 202 402, 196 380" stroke="#8c7a6a" stroke-width="3" fill="none" opacity=".45" />
+              <line x1="150" y1="500" x2="150" y2="440" stroke="#0e1222" stroke-width="3" />
+              <circle cx="150" cy="437" r="14" fill="#f0b43f" opacity=".16" />
+              <circle cx="150" cy="437" r="4" fill="#f0b43f" />
+            </svg>
+            <span class="mullion mullion-v" aria-hidden="true"></span>
+            <span class="mullion mullion-h" aria-hidden="true"></span>
+            <span class="glass" aria-hidden="true"></span>
+          </div>
+          <p class="caption">유리창 너머로 구경하는 느낌</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================== 2장 갈등 ===================== -->
+    <section class="act act-conflict" id="conflict" aria-labelledby="conflict-title">
+      <div class="container">
+        <p class="chapter"><b>2장</b> 갈등</p>
+        <h2 class="story story-lg" id="conflict-title">빌런은 ‘평면 스크린’이다.</h2>
+        <p class="lede">
+          우리를 가로막는 것은 거리도, 시간도 아니다.
+          장소를 늘 납작한 네모 안에 가두는 화면이다.
+        </p>
+
+        <div class="devices">
+          <!-- 사진 -->
+          <figure class="device">
+            <div class="print">
+              <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="sky-b" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#6b7290" />
+                    <stop offset="1" stop-color="#c9b7a8" />
+                  </linearGradient>
+                </defs>
+                <rect width="400" height="300" fill="url(#sky-b)" />
+                <circle cx="300" cy="150" r="26" fill="#e8d6b8" />
+                <path d="M0 190 C 80 160, 150 195, 220 175 S 340 140, 400 180 V 300 H 0 Z" fill="#6b6f84" />
+                <path d="M0 230 C 90 205, 170 245, 250 220 S 340 200, 400 225 V 300 H 0 Z" fill="#4a4d60" />
+                <path d="M190 300 C 200 275, 172 262, 182 245 S 200 228, 196 215" stroke="#9a8e86" stroke-width="3" fill="none" opacity=".5" />
+                <g stroke="#f1efe9" stroke-width="4" fill="none" opacity=".95">
+                  <path d="M18 40 V 18 H 40" /><path d="M360 18 H 382 V 40" />
+                  <path d="M18 260 V 282 H 40" /><path d="M360 282 H 382 V 260" />
+                </g>
+              </svg>
+            </div>
+            <figcaption>
+              <strong>사진은 멈춰 있다.</strong>
+              <span>한순간에 갇힌 한 장. 고개를 돌려도 네모 밖은 보이지 않는다.</span>
+            </figcaption>
+          </figure>
+
+          <!-- 영상 -->
+          <figure class="device">
+            <div class="player">
+              <svg viewBox="0 0 480 270" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="sky-c" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#2b3270" />
+                    <stop offset="1" stop-color="#8a6a7a" />
+                  </linearGradient>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0 L10 5 L0 10 Z" fill="#f0b43f" />
+                  </marker>
+                </defs>
+                <rect width="480" height="270" fill="url(#sky-c)" />
+                <path d="M0 150 C 90 120, 170 160, 260 135 S 400 100, 480 140 V 270 H 0 Z" fill="#2a3056" />
+                <path d="M0 200 C 100 175, 200 215, 300 190 S 420 170, 480 195 V 270 H 0 Z" fill="#171c35" />
+                <path d="M40 240 C 120 225, 150 200, 220 205 S 330 215, 400 170"
+                      stroke="#f0b43f" stroke-width="3" stroke-dasharray="8 7" fill="none" marker-end="url(#arrow)" />
+                <circle cx="40" cy="240" r="5" fill="#f0b43f" />
+                <path d="M220 205 C 230 180, 250 160, 290 150" stroke="#aeb6d0" stroke-width="2" stroke-dasharray="2 6" fill="none" opacity=".55" />
+                <g transform="translate(284 136)" fill="none" stroke="#aeb6d0" stroke-width="2" opacity=".9">
+                  <rect x="-6" y="0" width="12" height="9" rx="1.5" fill="#aeb6d0" stroke="none" />
+                  <path d="M-3.5 0 V -3 a3.5 3.5 0 0 1 7 0 V 0" />
+                </g>
+                <rect x="0" y="234" width="480" height="36" fill="#06080f" opacity=".9" />
+                <path d="M18 244 L 30 252 L 18 260 Z" fill="#ecebf5" />
+                <rect x="46" y="250" width="380" height="4" rx="2" fill="#3a4060" />
+                <rect x="46" y="250" width="150" height="4" rx="2" fill="#f0b43f" />
+                <circle cx="196" cy="252" r="6" fill="#f0b43f" />
+              </svg>
+            </div>
+            <figcaption>
+              <strong>영상은 남이 정한 동선대로만 보여준다.</strong>
+              <span>카메라가 본 곳만 볼 수 있다. 멈출 수도, 눈길을 돌릴 수도, 걸음을 늦출 수도 없다.</span>
+            </figcaption>
+          </figure>
+
+          <!-- VR -->
+          <figure class="device">
+            <div class="headset">
+              <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <path d="M70 92 C 40 60, 360 60, 330 92" stroke="#3a4066" stroke-width="12" fill="none" stroke-linecap="round" />
+                <rect x="62" y="80" width="276" height="112" rx="40" fill="#262e4f" />
+                <rect x="62" y="80" width="276" height="112" rx="40" fill="none" stroke="#3a4066" stroke-width="3" />
+                <rect x="150" y="166" width="100" height="26" rx="12" fill="#1a2040" />
+                <circle cx="140" cy="136" r="30" fill="#0e1222" />
+                <circle cx="260" cy="136" r="30" fill="#0e1222" />
+                <circle cx="132" cy="126" r="7" fill="#4a5a9a" opacity=".6" />
+                <circle cx="252" cy="126" r="7" fill="#4a5a9a" opacity=".6" />
+                <path d="M338 150 C 390 160, 380 230, 330 240 S 250 250, 262 282" stroke="#5b6388" stroke-width="4" fill="none" stroke-linecap="round" />
+                <rect x="220" y="262" width="100" height="30" rx="4" fill="#1a2040" stroke="#3a4066" stroke-width="2" />
+                <circle cx="306" cy="277" r="4" fill="#f0b43f" />
+                <rect x="232" y="274" width="40" height="6" rx="3" fill="#3a4066" />
+                <g transform="translate(42 190) rotate(-12)">
+                  <path d="M0 14 L 14 0 H 92 V 44 H 14 Z" fill="#f0b43f" />
+                  <circle cx="20" cy="22" r="4" fill="#0e1222" />
+                  <text x="36" y="30" font-family="Pretendard Variable, Pretendard, sans-serif" font-weight="700" font-size="20" fill="#0e1222">₩₩₩</text>
+                </g>
+                <rect x="60" y="246" width="130" height="10" rx="5" fill="#1a2040" />
+                <rect x="60" y="246" width="38" height="10" rx="5" fill="#5b6388" />
+                <text x="60" y="276" font-family="Pretendard Variable, Pretendard, sans-serif" font-size="14" fill="#aeb6d0">드라이버 설치 중 29%</text>
+              </svg>
+            </div>
+            <figcaption>
+              <strong>기존 VR은 비싼 장비와 복잡한 설치가 필요하다.</strong>
+              <span>헤드셋, PC, 케이블, 앱 설치. 들어가기도 전에 지친다.</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="gap" role="img" aria-label="보는 것과 그 공간에 있는 것 사이의 간극">
+          <span>보는 것</span>
+          <span class="gap-line" aria-hidden="true"></span>
+          <span>그 공간에 있는 것</span>
+        </div>
+        <p class="gap-note">이 사이의 간극이 고객의 고통이다.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 3장 해결 ===================== -->
+    <section class="act act-resolve" id="resolve" aria-labelledby="resolve-title" data-dawn>
+      <div class="container">
+        <div class="resolve-head">
+          <p class="chapter"><b>3장</b> 해결</p>
+          <h2 class="story story-xl" id="resolve-title">
+            문장 하나면,<br />당신이 걷고 싶은 세계가 열립니다.
+          </h2>
+          <p class="lede">
+            AI가 만든 공간을 앱 설치도, 장비도 없이 웹에서 바로.
+            산책 코스를 따라 걷되, 어디를 바라볼지, 언제 멈출지, 얼마나 빨리 걸을지는 당신이 정합니다.
+          </p>
+        </div>
+
+        <form class="prompt" id="prompt-form" autocomplete="off">
+          <label class="visually-hidden" for="prompt-input">걷고 싶은 곳을 한 문장으로</label>
+          <input id="prompt-input" name="prompt" type="text" maxlength="80"
+                 placeholder="예) 노을 지는 제주 해변을 걷고 싶어" />
+          <button class="btn btn-ink" type="submit">열기</button>
+        </form>
+        <ul class="chips" aria-label="예시 문장">
+          <li><button type="button" class="chip">비 내린 밤의 네온 골목</button></li>
+          <li><button type="button" class="chip">눈 덮인 자작나무 숲</button></li>
+          <li><button type="button" class="chip">노을 지는 제주 해변</button></li>
+          <li><button type="button" class="chip">1990년대 사라진 옛 동네 골목</button></li>
+          <li><button type="button" class="chip">붉은 모래의 화성 평원</button></li>
+          <li><button type="button" class="chip">안개 낀 아침의 숲길</button></li>
+        </ul>
+
+        <!-- 열린 창 -->
+        <div class="demo" id="demo" tabindex="-1">
+          <svg class="idle-art" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="sky-d" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2a3170" />
+                <stop offset=".6" stop-color="#7b5f90" />
+                <stop offset="1" stop-color="#e59a67" />
+              </linearGradient>
+            </defs>
+            <rect width="800" height="450" fill="url(#sky-d)" />
+            <circle cx="560" cy="250" r="40" fill="#f6c77a" />
+            <path d="M0 300 C 150 260, 300 300, 420 270 S 650 230, 800 275 V 450 H 0 Z" fill="#3a3f6f" />
+            <path d="M0 350 C 140 320, 300 365, 460 335 S 700 305, 800 335 V 450 H 0 Z" fill="#242a4d" />
+            <path d="M0 400 C 180 380, 320 415, 500 390 S 680 375, 800 395 V 450 H 0 Z" fill="#151a30" />
+            <line x1="300" y1="450" x2="300" y2="395" stroke="#0e1222" stroke-width="3" />
+            <circle cx="300" cy="392" r="16" fill="#f0b43f" opacity=".16" />
+            <circle cx="300" cy="392" r="4" fill="#f0b43f" />
+          </svg>
+          <canvas id="walk-canvas" aria-label="1인칭 산책 화면. 화면을 끌어 둘러볼 수 있습니다."></canvas>
+          <span class="mullion mullion-v" aria-hidden="true"></span>
+          <span class="mullion mullion-h" aria-hidden="true"></span>
+          <span class="glass" aria-hidden="true"></span>
+
+          <div class="overlay" id="ov-idle">
+            <div class="box">
+              <h3>창은 아직 닫혀 있습니다.</h3>
+              <p>위에 문장을 적고 ‘열기’를 누르거나, 예시 중 하나를 골라 보세요.</p>
+              <button type="button" class="btn btn-lamp" id="btn-random">예시 문장으로 바로 열기</button>
+            </div>
+          </div>
+
+          <div class="overlay" id="ov-building" hidden>
+            <div class="box">
+              <h3 id="building-title">세계를 여는 중</h3>
+              <ol class="steps-live" id="building-steps">
+                <li>문장을 읽는 중</li>
+                <li>지형을 빚고 코스를 그리는 중</li>
+                <li>빛과 날씨를 놓는 중</li>
+                <li>문을 여는 중</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="overlay" id="ov-ready" hidden>
+            <div class="box">
+              <h3>문이 열렸습니다.</h3>
+              <p id="ready-help">코스를 따라 천천히 걷기 시작합니다. 화면을 끌어 어디든 둘러보고, 아래에서 걷기와 정지, 속도를 고르세요.</p>
+              <p class="ready-course" id="ready-course"></p>
+              <button type="button" class="btn btn-lamp" id="btn-enter">들어가기</button>
+            </div>
+          </div>
+
+          <div class="overlay" id="ov-error" hidden>
+            <div class="box">
+              <h3>3D 화면을 열 수 없습니다.</h3>
+              <p id="error-text">이 브라우저에서는 WebGL을 사용할 수 없습니다. 최신 Chrome, Edge, Safari에서 다시 열어 주세요.</p>
+            </div>
+          </div>
+
+          <div class="hud" id="hud" hidden>
+            <div class="hud-top">
+              <div class="hud-place" id="hud-place"></div>
+              <div class="hud-actions">
+                <button type="button" class="btn btn-ghost" id="btn-full">전체 화면</button>
+                <button type="button" class="btn btn-ghost" id="btn-another">다른 문장으로</button>
+              </div>
+            </div>
+
+            <div class="hud-hint" id="hud-hint">
+              <span>화면을 끌어 둘러보기</span>
+              <span><kbd>Space</kbd> 걷기와 정지</span>
+              <span><kbd>1</kbd>~<kbd>5</kbd> 속도</span>
+            </div>
+
+            <div class="hud-bar">
+              <button type="button" class="walk-toggle" id="btn-walk" aria-pressed="true">
+                <span class="walk-icon" aria-hidden="true"></span>
+                <span class="walk-label">정지</span>
+              </button>
+              <div class="speed" role="group" aria-label="걷는 속도">
+                <span class="speed-title">속도</span>
+                <button type="button" class="speed-btn" data-speed="1" aria-pressed="false">1</button>
+                <button type="button" class="speed-btn" data-speed="2" aria-pressed="false">2</button>
+                <button type="button" class="speed-btn" data-speed="3" aria-pressed="true">3</button>
+                <button type="button" class="speed-btn" data-speed="4" aria-pressed="false">4</button>
+                <button type="button" class="speed-btn" data-speed="5" aria-pressed="false">5</button>
+              </div>
+              <div class="course" aria-live="off">
+                <span class="course-title">코스 <b id="course-pct">0%</b></span>
+                <div class="course-bar"><i id="course-fill"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-note">
+          이 체험은 브라우저 안에서 즉석으로 만든 미니 데모입니다. 같은 문장은 늘 같은 세계와 같은 코스로 열립니다.
+          실제 서비스에서는 AI가 생성한 3D 공간 위에 코스를 깔고 같은 방식으로 걷게 됩니다.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== 작동 방식 ===================== -->
+    <section class="how" id="how" aria-labelledby="how-title" data-dawn>
+      <div class="container">
+        <h2 id="how-title">세 걸음이면 됩니다.</h2>
+        <ol class="steps">
+          <li>
+            <h3>문장을 적는다</h3>
+            <p>장소, 시간, 날씨. 떠오르는 대로 한 줄이면 충분합니다.</p>
+          </li>
+          <li>
+            <h3>AI가 공간과 코스를 짓는다</h3>
+            <p>지형과 빛, 소품을 하나의 세계로 엮고, 그 위에 걷기 좋은 산책 코스를 그립니다.</p>
+          </li>
+          <li>
+            <h3>브라우저에서 바로 걷는다</h3>
+            <p>앱도 장비도 없이 코스를 따라 걷습니다. 둘러보는 시선, 걸음의 빠르기, 멈춤은 모두 당신 것입니다.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===================== 마무리 ===================== -->
+    <section class="close" aria-labelledby="close-title" data-dawn>
+      <div class="container">
+        <p class="struck">고해상도 3D 렌더링 엔진 탑재</p>
+        <h2 class="story story-xl" id="close-title">어디든 직접 걸어서 들어가 보세요.</h2>
+        <p class="body-copy">
+          우리가 파는 것은 기능이 아닙니다.
+          ‘보는 사람’에서 ‘그곳에 있는 사람’으로 바뀌는 하루입니다.
+        </p>
+        <a class="btn btn-ink" href="#resolve" data-go-prompt>지금 걸어보기</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span class="wordmark">Walk Anywhere</span>
+      <span>AI 생성 가상 공간 1인칭 산책 서비스 기획안</span>
+    </div>
+  </footer>
+
+  <!-- ===================== 페이지 동작 (3D 없이도 동작) ===================== -->
+  <script>
+    (() => {
+      const nav = document.querySelector('.nav');
+      const dawnSections = [...document.querySelectorAll('[data-dawn]')];
+
+      // 새벽 구간(3장 이후) 위에서는 내비 글자색을 뒤집는다.
+      const updateNav = () => {
+        const probe = nav.offsetHeight * 0.5;
+        const onDawn = dawnSections.some(s => {
+          const r = s.getBoundingClientRect();
+          return r.top <= probe && r.bottom > probe;
+        });
+        document.body.classList.toggle('on-dawn', onDawn);
+      };
+      addEventListener('scroll', updateNav, { passive: true });
+      addEventListener('resize', updateNav);
+      updateNav();
+
+      document.querySelectorAll('[data-go-prompt]').forEach(a => {
+        a.addEventListener('click', () => {
+          setTimeout(() => document.getElementById('prompt-input')?.focus({ preventScroll: true }), 500);
+        });
+      });
+    })();
+  </script>
+
+  <!-- ===================== 산책 데모 ===================== -->
+  <script type="module">
+    // ---------- 작은 유틸 ----------
+    const $ = (s, el = document) => el.querySelector(s);
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const smoothstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    const wrapAngle = a => Math.atan2(Math.sin(a), Math.cos(a));
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function hashString(str) {
+      let h = 1779033703 ^ str.length;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+      }
+      return h >>> 0;
+    }
+    function makeRng(seed) {
+      let a = seed >>> 0;
+      return () => {
+        a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    // 속도 1~5 (m/s): 느린 산책 → 빠른 걸음
+    const SPEEDS = [1.2, 1.9, 2.8, 4.0, 5.6];
+
+    // ---------- 문장 → 세계 설정 ----------
+    const THEMES = {
+      meadow: { name: '초원', sky: ['#5f93d6', '#eadbc9'], fogD: 0.009, ground: '#6f9a56', path: '#8a7a5a', amp: 6, freq: 0.035,
+                props: ['deciduous', 'rocks'], trees: 220,
+                sun: { color: '#fff1d6', int: 2.2, pos: [60, 80, -40] }, hemi: ['#bcd4ff', '#4d6b3a', 0.9] },
+      beach:  { name: '해변', sky: ['#2e3f86', '#f29a5a'], fogD: 0.007, ground: '#e3cfa3', path: '#cdb48a', amp: 1.4, freq: 0.03,
+                water: { level: -0.3, base: 0.6, slope: 0.09, color: '#2f7f9f' },
+                props: ['palms', 'rocks'], trees: 70,
+                sun: { color: '#ffb070', int: 2.4, pos: [-80, 16, -120] }, hemi: ['#ffd3a8', '#8a7a5a', 0.8], sunset: true },
+      forest: { name: '숲', sky: ['#5c86b3', '#c7d5c1'], fogD: 0.02, ground: '#3f6b3a', path: '#5e4b3a', amp: 5, freq: 0.04,
+                props: ['conifer', 'deciduous', 'rocks'], trees: 420,
+                sun: { color: '#e9f1d8', int: 1.8, pos: [40, 70, 20] }, hemi: ['#a9c8d8', '#2e4a2a', 0.8] },
+      snow:   { name: '설원', sky: ['#8ea2b8', '#dfe5ec'], fogD: 0.016, ground: '#eef2f6', path: '#cfd7df', amp: 4, freq: 0.03,
+                props: ['birch', 'conifer-snow', 'rocks'], trees: 260, particles: 'snow',
+                sun: { color: '#ffffff', int: 1.4, pos: [-30, 50, 40] }, hemi: ['#e6ecf5', '#9aa6b8', 0.9] },
+      desert: { name: '사막', sky: ['#4e97dd', '#f5d6a0'], fogD: 0.005, ground: '#e0a765', path: '#c48d55', amp: 9, freq: 0.018,
+                props: ['cacti', 'rocks'], trees: 70,
+                sun: { color: '#fff4dc', int: 2.8, pos: [80, 90, -20] }, hemi: ['#ffe9c2', '#9a6a3a', 0.8] },
+      city:   { name: '도시', sky: ['#070a1a', '#2a1f3f'], fogD: 0.013, ground: '#1d1f2a', path: '#2c3040', amp: 0, freq: 0.03,
+                props: ['buildings', 'lamps'], trees: 0, night: true, wet: true,
+                sun: { color: '#6a7cff', int: 0.5, pos: [30, 60, 30] }, hemi: ['#4b3f7a', '#1a1a24', 0.7] },
+      village:{ name: '옛 동네', sky: ['#2b2f5e', '#e28a58'], fogD: 0.012, ground: '#5f5a4e', path: '#726a5c', amp: 1.5, freq: 0.05,
+                props: ['houses', 'deciduous-far', 'lanterns'], trees: 60, particles: 'fireflies', sunset: true,
+                sun: { color: '#ffb27a', int: 1.2, pos: [-70, 18, -90] }, hemi: ['#8a7aa8', '#3a2f2a', 0.7] },
+      mars:   { name: '화성', sky: ['#140a0f', '#b2573a'], fogD: 0.009, ground: '#9a4a32', path: '#6e3424', amp: 7, freq: 0.03,
+                props: ['rocks', 'boulders'], trees: 0, stars: true,
+                sun: { color: '#ffd9c0', int: 1.6, pos: [50, 40, -80] }, hemi: ['#d8907a', '#3a1a14', 0.6] },
+    };
+
+    const THEME_RULES = [
+      ['mars',    /화성|우주|달 표면|행성|크레이터|외계/],
+      ['snow',    /눈|설원|겨울|자작나무|빙하|얼음|설산/],
+      ['beach',   /해변|바다|파도|모래사장|제주|섬|해안|바닷|비치|백사장/],
+      ['city',    /네온|도시|빌딩|서울|도쿄|홍콩|뉴욕|야경|거리|번화가|도심|강남|홍대/],
+      ['village', /옛 동네|시골|마을|한옥|골목|동네|고향|198\d|199\d|8\d년대|9\d년대|시장|주택가/],
+      ['desert',  /사막|사구|모래 언덕|선인장|황야/],
+      ['forest',  /숲|나무|산|계곡|오솔길|대나무|정글|산책길|수목/],
+    ];
+
+    function interpret(prompt) {
+      const key = THEME_RULES.find(([, re]) => re.test(prompt))?.[0] ?? 'meadow';
+      const t = JSON.parse(JSON.stringify(THEMES[key]));
+      t.key = key; t.tags = [];
+
+      const night  = /밤|야경|심야|달빛|별빛|자정|한밤/.test(prompt) || t.night;
+      const sunset = /노을|석양|황혼|해질|일몰|저녁/.test(prompt);
+      const dawn   = /새벽|아침|동틀|일출|이른/.test(prompt);
+      const rain   = /(^|\s)비(\s|가|에|오는|내린|내리|$)|빗|장마|우산|젖은/.test(prompt);
+      const fog    = /안개|흐린|구름|뿌연/.test(prompt);
+
+      if (sunset && !t.sunset) {
+        t.sky = ['#2e3f86', '#f29a5a'];
+        t.sun = { color: '#ffb070', int: t.sun.int * 0.9, pos: [-80, 16, -120] };
+        t.hemi = ['#ffd3a8', t.hemi[1], 0.8];
+        t.tags.push('노을');
+      } else if (t.sunset) t.tags.push('노을');
+
+      if (dawn) {
+        t.sky = ['#6d7fb6', '#f6d2c0'];
+        t.sun = { color: '#ffd7b0', int: 1.6, pos: [-60, 12, -100] };
+        t.hemi = ['#c9cff0', t.hemi[1], 0.8];
+        t.tags.push('새벽');
+      }
+
+      if (rain) {
+        t.particles = 'rain';
+        t.fogD *= 1.8;
+        t.wet = true;
+        if (!night) { t.sky = ['#3a4050', '#8a909e']; t.sun = { ...t.sun, color: '#c8cfe0', int: t.sun.int * 0.4 }; }
+        t.tags.push('비');
+      }
+
+      if (night) {
+        if (!t.night) {
+          t.sky = ['#06091a', '#1d2246'];
+          t.sun = { color: '#cfd8ff', int: 0.35, pos: [40, 60, 30] };
+          t.hemi = ['#3b4470', '#141826', 0.5];
+          if (!t.particles && key !== 'snow') t.particles = 'fireflies';
+        }
+        t.night = true;
+        t.stars = !rain && !fog;
+        t.tags.push('밤');
+      }
+
+      if (fog) {
+        t.fogD = Math.max(t.fogD * 2.2, 0.03);
+        t.sky = [t.sky[0], '#b9bfc9'];
+        if (!night) { t.sun = { ...t.sun, int: t.sun.int * 0.6 }; }
+        t.tags.push('안개');
+      }
+      return t;
+    }
+
+    // ---------- 세계 ----------
+    class World {
+      constructor(THREE, canvas, host) {
+        this.THREE = THREE;
+        this.canvas = canvas;
+        this.host = host;
+        this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+        this.renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.05;
+
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(72, 16 / 9, 0.1, 1400);
+        this.camera.rotation.order = 'YXZ';
+
+        // 걷기 상태
+        this.walking = false;
+        this.speedLevel = 3;
+        this.dist = 0;
+        this.headYaw = 0; this.pitch = 0; this.bodyYaw = 0;
+        this.bob = 0;
+        this.camY = 1.7;
+        this.active = false;
+        this.visible = true;
+        this.entry = null;
+        this.onProgress = null;
+        this.clock = new THREE.Clock();
+        this.heightAt = () => 0;
+        this.tick = this.tick.bind(this);
+
+        new ResizeObserver(() => this.resize()).observe(host);
+        this.resize();
+        requestAnimationFrame(this.tick);
+      }
+
+      resize() {
+        const w = this.host.clientWidth, h = this.host.clientHeight;
+        if (!w || !h) return;
+        this.renderer.setSize(w, h, false);
+        this.camera.aspect = w / h;
+        this.camera.updateProjectionMatrix();
+      }
+
+      dispose() {
+        this.scene.traverse(o => {
+          if (o.geometry) o.geometry.dispose();
+          const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
+          mats.forEach(m => { Object.values(m).forEach(v => v?.isTexture && v.dispose()); m.dispose(); });
+        });
+        this.scene.clear();
+        this.particles = null; this.water = null; this.sky = null; this.sunLight = null;
+      }
+
+      build(prompt) {
+        const THREE = this.THREE;
+        this.dispose();
+        const theme = interpret(prompt);
+        const rng = makeRng(hashString(prompt));
+        this.theme = theme;
+
+        // 하늘, 안개
+        const skyTop = new THREE.Color(theme.sky[0]);
+        const skyBot = new THREE.Color(theme.sky[1]);
+        const fogColor = skyBot.clone().lerp(skyTop, 0.15);
+        this.scene.fog = new THREE.FogExp2(fogColor, theme.fogD);
+        this.scene.background = skyBot;
+
+        this.sky = new THREE.Group();
+        const skyMat = new THREE.ShaderMaterial({
+          side: THREE.BackSide, depthWrite: false, fog: false,
+          uniforms: { topColor: { value: skyTop }, bottomColor: { value: skyBot }, offset: { value: 30 }, exponent: { value: 0.65 } },
+          vertexShader: `varying vec3 vW; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vW = wp.xyz - cameraPosition; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+          fragmentShader: `uniform vec3 topColor; uniform vec3 bottomColor; uniform float offset; uniform float exponent; varying vec3 vW;
+            void main(){ float h = normalize(vW + vec3(0.0, offset, 0.0)).y; gl_FragColor = vec4(mix(bottomColor, topColor, pow(max(h, 0.0), exponent)), 1.0); }`,
+        });
+        this.sky.add(new THREE.Mesh(new THREE.SphereGeometry(600, 40, 20), skyMat));
+
+        const sunDir = new THREE.Vector3(...theme.sun.pos).normalize();
+        const disc = new THREE.Mesh(new THREE.SphereGeometry(theme.night ? 5 : 8, 18, 12),
+          new THREE.MeshBasicMaterial({ color: theme.night ? '#e8ecff' : theme.sun.color, fog: false }));
+        disc.position.copy(sunDir).multiplyScalar(560);
+        this.sky.add(disc);
+
+        if (theme.stars) {
+          const n = 1600, arr = new Float32Array(n * 3);
+          for (let i = 0; i < n; i++) {
+            const u = rng(), v = rng();
+            const th = 2 * Math.PI * u, ph = Math.acos(1 - v);
+            const r = 580;
+            arr[i * 3] = r * Math.sin(ph) * Math.cos(th);
+            arr[i * 3 + 1] = Math.abs(r * Math.cos(ph)) + 10;
+            arr[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th);
+          }
+          const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+          this.sky.add(new THREE.Points(g, new THREE.PointsMaterial({ color: '#ffffff', size: 2.2, map: spriteTexture(THREE, 'dot'), sizeAttenuation: true, fog: false, transparent: true, opacity: 0.9, depthWrite: false })));
+        }
+        this.scene.add(this.sky);
+
+        // 빛
+        this.scene.add(new THREE.HemisphereLight(theme.hemi[0], theme.hemi[1], theme.hemi[2]));
+        const sun = new THREE.DirectionalLight(theme.sun.color, theme.sun.int);
+        sun.castShadow = true;
+        sun.shadow.mapSize.set(1536, 1536);
+        sun.shadow.camera.near = 1; sun.shadow.camera.far = 400;
+        sun.shadow.camera.left = -70; sun.shadow.camera.right = 70;
+        sun.shadow.camera.top = 70; sun.shadow.camera.bottom = -70;
+        sun.shadow.bias = -0.0008;
+        sun.shadow.normalBias = 0.03;
+        this.scene.add(sun); this.scene.add(sun.target);
+        this.sunLight = sun; this.sunDir = sunDir;
+
+        // 지형과 코스
+        this.heightAt = makeHeightFn(theme, rng);
+        const world = new THREE.Group();
+        this.scene.add(world);
+        world.add(makeTerrain(THREE, theme, this.heightAt));
+
+        this.course = makeCourse(THREE, theme, rng);
+        this.courseLength = this.course.getLength();
+        const samples = this.course.getSpacedPoints(360);
+        const nearPath = (x, z, clear) => {
+          const c2 = clear * clear;
+          for (const p of samples) { const dx = p.x - x, dz = p.z - z; if (dx * dx + dz * dz < c2) return true; }
+          return false;
+        };
+        world.add(makeRibbon(THREE, this.course, this.heightAt, theme.path, theme.key === 'city' ? 2.6 : 1.5));
+
+        if (theme.water) {
+          const g = new THREE.PlaneGeometry(300, 300, 48, 48); g.rotateX(-Math.PI / 2);
+          const m = new THREE.MeshStandardMaterial({ color: theme.water.color, transparent: true, opacity: 0.8, roughness: 0.15, metalness: 0.15 });
+          this.water = new THREE.Mesh(g, m);
+          this.water.position.y = theme.water.level;
+          this.water.receiveShadow = true;
+          world.add(this.water);
+        }
+
+        // 소품 (코스 위는 비워 둔다)
+        const ctx = { THREE, theme, rng, h: this.heightAt, world, nearPath };
+        for (const p of theme.props) PROPS[p]?.(ctx);
+
+        // 날씨 입자
+        if (theme.particles) this.particles = makeParticles(THREE, theme.particles, rng);
+        if (this.particles) this.scene.add(this.particles.points);
+
+        // 산책 초기화: 코스 출발점, 코스 방향을 바라본 채로
+        this.dist = 0;
+        this.headYaw = 0; this.pitch = 0;
+        const t0 = this.course.getTangentAt(0);
+        this.bodyYaw = Math.atan2(-t0.x, -t0.z);
+        const p0 = this.course.getPointAt(0);
+        this.camY = this.groundY(p0.x, p0.z) + 1.7;
+        this.entry = reduceMotion ? null : { t: 0, dur: 1.6 };
+        this.walking = false;
+        this.active = true;
+        this.clock.getDelta();
+      }
+
+      groundY(x, z) {
+        let g = this.heightAt(x, z);
+        if (this.theme?.water) g = Math.max(g, this.theme.water.level - 0.55);
+        return g;
+      }
+
+      look(dx, dy) {
+        this.headYaw = wrapAngle(this.headYaw + dx);
+        this.pitch = clamp(this.pitch + dy, -1.2, 1.2);
+      }
+
+      setSpeed(level) { this.speedLevel = clamp(Math.round(level), 1, 5); }
+      get speed() { return SPEEDS[this.speedLevel - 1]; }
+
+      tick() {
+        requestAnimationFrame(this.tick);
+        if (!this.active) return;
+        const dt = Math.min(this.clock.getDelta(), 0.05);
+        if (document.hidden || !this.visible) return;
+        this.update(dt);
+        this.renderer.render(this.scene, this.camera);
+      }
+
+      update(dt) {
+        const L = this.courseLength;
+        if (this.walking) this.dist += this.speed * dt;
+        const u = (((this.dist % L) + L) % L) / L;
+        const p = this.course.getPointAt(u);
+        const tg = this.course.getTangentAt(u);
+
+        // 몸은 코스를 따라 돌고, 시선은 그 위에 얹힌다
+        const targetYaw = Math.atan2(-tg.x, -tg.z);
+        this.bodyYaw = wrapAngle(this.bodyYaw + wrapAngle(targetYaw - this.bodyYaw) * (1 - Math.exp(-dt * 5)));
+
+        const moving = this.walking ? this.speed : 0;
+        if (!reduceMotion) this.bob += dt * moving * 1.8;
+        const eye = this.groundY(p.x, p.z) + 1.7;
+        this.camY = lerp(this.camY, eye, 1 - Math.exp(-dt * 10));
+        let y = this.camY + Math.sin(this.bob) * 0.03 * Math.min(1, moving / 3);
+
+        let pitchOffset = 0, fov = 72;
+        if (this.entry) {
+          this.entry.t += dt;
+          const e = easeOut(clamp(this.entry.t / this.entry.dur, 0, 1));
+          y += lerp(3.2, 0, e);
+          pitchOffset = lerp(-0.42, 0, e);
+          fov = lerp(92, 72, e);
+          if (e >= 1) this.entry = null;
+        }
+        if (this.camera.fov !== fov) { this.camera.fov = fov; this.camera.updateProjectionMatrix(); }
+
+        this.camera.position.set(p.x, y, p.z);
+        this.camera.rotation.set(this.pitch + pitchOffset, this.bodyYaw + this.headYaw, 0);
+
+        // 하늘과 해는 플레이어를 따라간다
+        this.sky.position.copy(this.camera.position);
+        const s = this.sunLight;
+        s.position.copy(this.camera.position).addScaledVector(this.sunDir, 150);
+        s.target.position.copy(this.camera.position);
+        s.target.updateMatrixWorld();
+
+        if (this.water) {
+          const t = performance.now() * 0.001;
+          const pa = this.water.geometry.attributes.position;
+          for (let i = 0; i < pa.count; i++) {
+            const x = pa.getX(i), z = pa.getZ(i);
+            pa.setY(i, 0.07 * Math.sin(x * 0.28 + t * 1.2) * Math.cos(z * 0.22 + t * 0.9));
+          }
+          pa.needsUpdate = true;
+          this.water.geometry.computeVertexNormals();
+        }
+        if (this.particles) this.particles.update(dt, this.camera.position);
+        this.onProgress?.(u, L);
+      }
+    }
+
+    // ---------- 지형 ----------
+    function makeHeightFn(theme, rng) {
+      const s = [rng() * 100, rng() * 100, rng() * 100, rng() * 100];
+      const f = theme.freq, amp = theme.amp;
+      return (x, z) => {
+        const flat = smoothstep(5, 24, Math.hypot(x, z));
+        const n = Math.sin(x * f + s[0]) * Math.cos(z * f * 1.27 + s[1])
+                + 0.55 * Math.sin((x * 0.7 - z * 0.9) * f * 2.1 + s[2])
+                + 0.25 * Math.sin((x + z) * f * 4.3 + s[3]);
+        let h = amp * (n / 1.8) * flat;
+        if (theme.water) h = theme.water.base + h + theme.water.slope * Math.min(z, 0);
+        return h;
+      };
+    }
+
+    function makeTerrain(THREE, theme, h) {
+      const size = 270, seg = 120;
+      const geo = new THREE.PlaneGeometry(size, size, seg, seg);
+      geo.rotateX(-Math.PI / 2);
+      const pos = geo.attributes.position;
+      const colors = new Float32Array(pos.count * 3);
+      const c1 = new THREE.Color(theme.ground);
+      const c2 = c1.clone().offsetHSL(0.015, 0.04, 0.07);
+      const c3 = c1.clone().offsetHSL(-0.015, -0.04, -0.09);
+      const wet = c1.clone().offsetHSL(0, 0.05, -0.18);
+      const c = new THREE.Color();
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), z = pos.getZ(i);
+        const y = h(x, z);
+        pos.setY(i, y);
+        const n = 0.5 + 0.5 * Math.sin(x * 0.21 + Math.sin(z * 0.17) * 2.0) * Math.cos(z * 0.19 + Math.sin(x * 0.13) * 1.7);
+        c.copy(c1).lerp(n > 0.5 ? c2 : c3, Math.abs(n - 0.5) * 2);
+        if (theme.water && y < theme.water.level + 0.9) c.lerp(wet, smoothstep(theme.water.level + 0.9, theme.water.level - 0.4, y));
+        colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+      }
+      geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geo.computeVertexNormals();
+      const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: theme.wet ? 0.35 : 0.95, metalness: theme.wet ? 0.15 : 0 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    // ---------- 코스 ----------
+    function ellipsePoints(THREE, cx, cz, rx, rz, n, startAngle) {
+      const pts = [];
+      for (let i = 0; i < n; i++) {
+        const a = startAngle + (i / n) * Math.PI * 2;
+        pts.push(new THREE.Vector3(cx + Math.cos(a) * rx, 0, cz + Math.sin(a) * rz));
+      }
+      return pts;
+    }
+
+    function makeCourse(THREE, theme, rng) {
+      let pts;
+      if (theme.key === 'city' || theme.key === 'village') {
+        // 길 한쪽으로 내려갔다가 반대쪽으로 돌아오는 거리 산책
+        pts = ellipsePoints(THREE, 0, 0, theme.key === 'city' ? 3.4 : 2.2, 84, 14, 0);
+      } else if (theme.key === 'beach') {
+        // 물가를 따라 갔다가 모래 위쪽으로 돌아오는 해변 산책
+        pts = ellipsePoints(THREE, 0, 11, 72, 7, 14, -Math.PI / 2);
+      } else {
+        // 문장마다 다른 들길: 출발점은 늘 원점
+        const n = 7 + Math.floor(rng() * 3);
+        pts = [];
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2 + (rng() - 0.5) * 0.5;
+          const r = 26 + rng() * 34;
+          pts.push(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r));
+        }
+        const p0 = pts[0].clone();
+        pts.forEach(p => p.sub(p0));
+      }
+      const curve = new THREE.CatmullRomCurve3(pts, true, 'centripetal', 0.5);
+      curve.arcLengthDivisions = 800;
+      curve.updateArcLengths();
+      return curve;
+    }
+
+    function makeRibbon(THREE, curve, h, color, width) {
+      const n = 480;
+      const pts = curve.getSpacedPoints(n);
+      const verts = new Float32Array((n + 1) * 2 * 3);
+      const idx = [];
+      for (let i = 0; i <= n; i++) {
+        const p = pts[i], t = curve.getTangentAt(i / n);
+        const nx = -t.z, nz = t.x;
+        const lx = p.x + nx * width / 2, lz = p.z + nz * width / 2;
+        const rx = p.x - nx * width / 2, rz = p.z - nz * width / 2;
+        verts.set([lx, h(lx, lz) + 0.06, lz, rx, h(rx, rz) + 0.06, rz], i * 6);
+        if (i < n) { const a = i * 2, b = a + 1, c = a + 2, d = a + 3; idx.push(a, c, b, b, c, d); }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      const mat = new THREE.MeshStandardMaterial({ color, roughness: 1, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.receiveShadow = true;
+      return mesh;
+    }
+
+    // ---------- 소품 공통 ----------
+    function scatter(ctx, count, rMin, rMax, filter, clear = 3.2) {
+      const { rng, h, nearPath } = ctx; const out = [];
+      let guard = count * 8;
+      while (out.length < count && guard-- > 0) {
+        const a = rng() * Math.PI * 2, r = rMin + Math.sqrt(rng()) * (rMax - rMin);
+        const x = Math.cos(a) * r, z = Math.sin(a) * r, y = h(x, z);
+        if (nearPath(x, z, clear)) continue;
+        if (filter && !filter(x, y, z)) continue;
+        out.push({ x, y, z });
+      }
+      return out;
+    }
+
+    function instanced(ctx, geo, mat, items, { shadow = true } = {}) {
+      const { THREE, world } = ctx;
+      if (!items.length) return null;
+      const m = new THREE.InstancedMesh(geo, mat, items.length);
+      const d = new THREE.Object3D(); d.rotation.order = 'YXZ';
+      items.forEach((it, i) => {
+        d.position.set(it.x, it.y, it.z);
+        d.rotation.set(it.rx || 0, it.ry || 0, it.rz || 0);
+        const s = it.s ?? 1;
+        if (typeof s === 'number') d.scale.setScalar(s); else d.scale.set(s[0], s[1], s[2]);
+        d.updateMatrix();
+        m.setMatrixAt(i, d.matrix);
+        if (it.color) m.setColorAt(i, it.color);
+      });
+      m.castShadow = shadow; m.receiveShadow = shadow;
+      m.instanceMatrix.needsUpdate = true;
+      if (m.instanceColor) m.instanceColor.needsUpdate = true;
+      world.add(m);
+      return m;
+    }
+
+    function hsl(THREE, h, s, l) { return new THREE.Color().setHSL(h, s, l); }
+
+    const PROPS = {
+      deciduous(ctx) { treesDeciduous(ctx, ctx.theme.trees, 6, 125); },
+      'deciduous-far'(ctx) { treesDeciduous(ctx, ctx.theme.trees, 34, 125, (x) => Math.abs(x) > 30); },
+      conifer(ctx) { treesConifer(ctx, ctx.theme.trees, false); },
+      'conifer-snow'(ctx) { treesConifer(ctx, Math.round(ctx.theme.trees * 0.45), true); },
+
+      birch(ctx) {
+        const { THREE, rng, theme } = ctx;
+        const items = scatter(ctx, theme.trees, 5, 125).map(p => ({ ...p, ry: rng() * 6.28, s: [1, 0.8 + rng() * 0.6, 1] }));
+        const trunk = new THREE.CylinderGeometry(0.13, 0.22, 7.5, 7); trunk.translate(0, 3.75, 0);
+        const tex = birchTexture(THREE, rng);
+        instanced(ctx, trunk, new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }), items);
+        const br = new THREE.CylinderGeometry(0.035, 0.06, 2.6, 5); br.translate(0, 1.3, 0);
+        const branches = [];
+        items.forEach(t => {
+          for (let i = 0; i < 3; i++) {
+            const ang = rng() * 6.28, hgt = 4.2 + rng() * 2.8;
+            branches.push({ x: t.x, y: t.y + hgt * t.s[1], z: t.z, ry: ang, rz: 0.9 + rng() * 0.5, s: 0.8 + rng() * 0.5, color: hsl(THREE, 0.08, 0.1, 0.3) });
+          }
+        });
+        instanced(ctx, br, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9 }), branches, { shadow: false });
+      },
+
+      palms(ctx) {
+        const { THREE, rng, theme } = ctx;
+        const pts = scatter(ctx, theme.trees, 8, 125, (x, y) => y > 0.45, 5.2);
+        const trunk = new THREE.CylinderGeometry(0.2, 0.42, 7.5, 7); trunk.translate(0, 3.75, 0);
+        const trunks = pts.map(p => ({ ...p, rx: (rng() - 0.5) * 0.3, rz: (rng() - 0.5) * 0.3, ry: rng() * 6.28, s: [1, 0.8 + rng() * 0.5, 1] }));
+        instanced(ctx, trunk, new THREE.MeshStandardMaterial({ color: '#7a5a3a', roughness: 0.95 }), trunks);
+        const leaf = new THREE.PlaneGeometry(1.1, 4.4, 1, 3); leaf.rotateX(-Math.PI / 2); leaf.translate(0, 0, 2.2);
+        const lp = leaf.attributes.position;
+        for (let i = 0; i < lp.count; i++) { const z = lp.getZ(i); lp.setY(i, -0.25 * (z / 4.4) * (z / 4.4) * 4.4); }
+        const leaves = [];
+        const top = new THREE.Vector3(), e = new THREE.Euler(0, 0, 0, 'YXZ');
+        trunks.forEach(t => {
+          e.set(t.rx, t.ry, t.rz); top.set(0, 7.5 * t.s[1], 0).applyEuler(e);
+          const n = 6 + Math.floor(rng() * 3);
+          for (let i = 0; i < n; i++) {
+            leaves.push({ x: t.x + top.x, y: t.y + top.y, z: t.z + top.z, ry: (i / n) * 6.28 + rng() * 0.4, rx: 0.35 + rng() * 0.45, s: 0.8 + rng() * 0.4,
+              color: hsl(THREE, 0.3 + rng() * 0.05, 0.45, 0.28 + rng() * 0.12) });
+          }
+        });
+        instanced(ctx, leaf, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8, side: THREE.DoubleSide }), leaves);
+      },
+
+      cacti(ctx) {
+        const { THREE, rng, theme } = ctx;
+        const items = scatter(ctx, theme.trees, 6, 125).map(p => ({ ...p, ry: rng() * 6.28, s: 0.8 + rng() * 0.7 }));
+        const body = new THREE.CylinderGeometry(0.42, 0.52, 3.4, 9); body.translate(0, 1.7, 0);
+        const mat = new THREE.MeshStandardMaterial({ color: '#4f7f45', roughness: 0.85 });
+        instanced(ctx, body, mat, items);
+        const armH = new THREE.CylinderGeometry(0.22, 0.26, 1.1, 7); armH.rotateZ(Math.PI / 2); armH.translate(0.55, 0, 0);
+        const armV = new THREE.CylinderGeometry(0.22, 0.24, 1.3, 7); armV.translate(1.1, 0.65, 0);
+        const arms = [];
+        items.forEach(c => {
+          const n = rng() < 0.7 ? 2 : 1;
+          for (let i = 0; i < n; i++) arms.push({ x: c.x, y: c.y + (1.4 + rng() * 1.0) * c.s, z: c.z, ry: c.ry + (i === 0 ? 0 : Math.PI) + (rng() - 0.5), s: c.s });
+        });
+        instanced(ctx, armH, mat, arms); instanced(ctx, armV, mat, arms);
+      },
+
+      rocks(ctx) {
+        const { THREE, rng, theme } = ctx;
+        const base = new THREE.Color(theme.key === 'mars' ? '#7a3a28' : theme.key === 'beach' ? '#8a8276' : theme.key === 'snow' ? '#8a93a0' : '#6b6b70');
+        const items = scatter(ctx, theme.key === 'mars' ? 260 : 90, 4, 125, (x, y) => !theme.water || y > 0.2, 2.2)
+          .map(p => ({ ...p, y: p.y - 0.15, rx: rng() * 3, ry: rng() * 3, rz: rng() * 3,
+            s: [0.5 + rng() * 1.3, 0.35 + rng() * 0.7, 0.5 + rng() * 1.3], color: base.clone().offsetHSL(0, 0, (rng() - 0.5) * 0.16) }));
+        const g = new THREE.DodecahedronGeometry(1, 0);
+        instanced(ctx, g, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.95, flatShading: true }), items);
+      },
+
+      boulders(ctx) {
+        const { THREE, rng } = ctx;
+        const base = new THREE.Color('#8f4530');
+        const items = scatter(ctx, 40, 10, 125, null, 6).map(p => ({ ...p, y: p.y - 0.6, rx: rng() * 3, ry: rng() * 3, rz: rng() * 3,
+          s: [2 + rng() * 3, 1.4 + rng() * 2.2, 2 + rng() * 3], color: base.clone().offsetHSL(0, 0, (rng() - 0.5) * 0.14) }));
+        const g = new THREE.DodecahedronGeometry(1, 1);
+        instanced(ctx, g, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.95, flatShading: true }), items);
+      },
+
+      buildings(ctx) {
+        const { THREE, rng, world } = ctx;
+        const tex = windowTexture(THREE, rng);
+        const neon = ['#ff3ea5', '#2ee6ff', '#ffd166', '#9b5cff', '#3cff9a'];
+        const signGeo = new THREE.BoxGeometry(1, 1, 1);
+        const facade = new THREE.Color('#1a1d2b');
+        for (let gx = -98; gx <= 98; gx += 14) {
+          for (let gz = -98; gz <= 98; gz += 14) {
+            if (Math.abs(gx) < 9 || Math.abs(gz) < 9) continue;
+            if (Math.hypot(gx, gz) > 118 || rng() < 0.12) continue;
+            const w = 7 + rng() * 4, d = 7 + rng() * 4;
+            const dist = Math.hypot(gx, gz);
+            const hgt = 10 + rng() * rng() * 36 + Math.max(0, 40 - dist) * 0.5;
+            const t = tex.clone(); t.repeat.set(w / 2.4, hgt / 3); t.needsUpdate = true;
+            const side = new THREE.MeshStandardMaterial({ map: t, emissiveMap: t, emissive: '#f5e6c8', emissiveIntensity: 0.9, roughness: 0.75 });
+            const top = new THREE.MeshStandardMaterial({ color: facade.clone().offsetHSL(0, 0, (rng() - 0.5) * 0.08), roughness: 0.9 });
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, hgt, d), [side, side, top, top, side, side]);
+            mesh.position.set(gx + (rng() - 0.5) * 2, hgt / 2 - 0.2, gz + (rng() - 0.5) * 2);
+            mesh.castShadow = true; mesh.receiveShadow = true;
+            world.add(mesh);
+
+            if (rng() < 0.28) {
+              const c = neon[Math.floor(rng() * neon.length)];
+              const sign = new THREE.Mesh(signGeo, new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 2.2, roughness: 0.4 }));
+              const sy = 3 + rng() * Math.min(hgt * 0.6, 20);
+              if (Math.abs(gx) <= Math.abs(gz)) {
+                sign.scale.set(0.3, 1.1, Math.min(d * 0.6, 5));
+                sign.position.set(mesh.position.x - Math.sign(gx) * (w / 2 + 0.2), sy, mesh.position.z);
+              } else {
+                sign.scale.set(Math.min(w * 0.6, 5), 1.1, 0.3);
+                sign.position.set(mesh.position.x, sy, mesh.position.z - Math.sign(gz) * (d / 2 + 0.2));
+              }
+              world.add(sign);
+            }
+          }
+        }
+        [[-7, 6, -22], [7, 6, 22], [-22, 6, 7], [22, 6, -7]].forEach(([x, y, z], i) => {
+          const l = new THREE.PointLight(neon[i % neon.length], 40, 34, 2); l.position.set(x, y, z); world.add(l);
+        });
+      },
+
+      lamps(ctx) { streetLamps(ctx, 6, 16, '#ffd9a0', 5.2); },
+      lanterns(ctx) { streetLamps(ctx, 5.2, 14, '#ffb45a', 3.2); },
+
+      houses(ctx) {
+        const { THREE, rng, world, h } = ctx;
+        const walls = ['#8a7f70', '#a09484', '#6f6a68', '#b9ad9a', '#7d7466'];
+        const roofs = ['#3b3844', '#4a3f3f', '#2f3340'];
+        const win = new THREE.PlaneGeometry(0.9, 1.0);
+        const winOn = new THREE.MeshStandardMaterial({ color: '#ffb45a', emissive: '#ffb45a', emissiveIntensity: 1.6 });
+        const winOff = new THREE.MeshStandardMaterial({ color: '#1a1a22', roughness: 0.9 });
+        const rows = [10.5, 23];
+        for (const rowX of rows) for (const sx of [-1, 1]) {
+          for (let z = -92; z <= 92; z += 10) {
+            if (Math.abs(z) < 6) continue;
+            if (rowX > 15 && rng() < 0.45) continue;
+            const x = sx * (rowX + (rng() - 0.5) * 2.5), zz = z + (rng() - 0.5) * 2;
+            const w = 5.5 + rng() * 2, d = 4.6 + rng() * 1.6, hh = 3 + rng() * 0.8;
+            const y = h(x, zz);
+            const body = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), new THREE.MeshStandardMaterial({ color: walls[Math.floor(rng() * walls.length)], roughness: 0.95 }));
+            body.position.set(x, y + hh / 2 - 0.1, zz); body.castShadow = true; body.receiveShadow = true; world.add(body);
+            const roof = new THREE.Mesh(new THREE.ConeGeometry(Math.max(w, d) * 0.78, 2.3, 4), new THREE.MeshStandardMaterial({ color: roofs[Math.floor(rng() * roofs.length)], roughness: 0.9, flatShading: true }));
+            roof.rotation.y = Math.PI / 4; roof.position.set(x, y + hh + 1.05, zz); roof.castShadow = true; world.add(roof);
+            for (const off of [-1.4, 1.4]) {
+              const m = new THREE.Mesh(win, rng() < 0.7 ? winOn : winOff);
+              m.position.set(x - sx * (w / 2 + 0.02), y + hh * 0.55, zz + off);
+              m.rotation.y = -sx * Math.PI / 2;
+              world.add(m);
+            }
+          }
+        }
+      },
+    };
+
+    function treesDeciduous(ctx, count, rMin, rMax, filter) {
+      const { THREE, rng, theme } = ctx;
+      const pts = scatter(ctx, count, rMin, rMax, (x, y, z) => (!theme.water || y > 0.45) && (!filter || filter(x, y, z)));
+      const trunk = new THREE.CylinderGeometry(0.2, 0.36, 2.8, 7); trunk.translate(0, 1.4, 0);
+      const canopy = new THREE.SphereGeometry(1, 10, 8); canopy.translate(0, 0.85, 0);
+      const dark = theme.night || theme.key === 'village';
+      const trunks = pts.map(p => ({ ...p, ry: rng() * 6.28, s: [1, 0.9 + rng() * 0.5, 1] }));
+      instanced(ctx, trunk, new THREE.MeshStandardMaterial({ color: '#5b4030', roughness: 0.95 }), trunks);
+      const canopies = trunks.map(t => {
+        const r = 1.7 + rng() * 1.2;
+        return { x: t.x, y: t.y + 2.8 * t.s[1], z: t.z, ry: rng() * 6.28, s: [r, r * (0.8 + rng() * 0.3), r],
+          color: hsl(THREE, 0.22 + rng() * 0.12, 0.38 + rng() * 0.15, dark ? 0.2 + rng() * 0.08 : 0.3 + rng() * 0.12) };
+      });
+      instanced(ctx, canopy, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, flatShading: true }), canopies);
+    }
+
+    function treesConifer(ctx, count, snowy) {
+      const { THREE, rng } = ctx;
+      const pts = scatter(ctx, count, 6, 125);
+      const trunk = new THREE.CylinderGeometry(0.18, 0.32, 2.2, 7); trunk.translate(0, 1.1, 0);
+      const cone = new THREE.ConeGeometry(1.7, 6.2, 8); cone.translate(0, 3.1, 0);
+      const trunks = pts.map(p => ({ ...p, ry: rng() * 6.28, s: [1, 0.85 + rng() * 0.6, 1] }));
+      instanced(ctx, trunk, new THREE.MeshStandardMaterial({ color: '#4a3326', roughness: 0.95 }), trunks);
+      const cones = trunks.map(t => ({ x: t.x, y: t.y + 1.6 * t.s[1], z: t.z, ry: rng() * 6.28, s: [0.8 + rng() * 0.5, t.s[1], 0.8 + rng() * 0.5],
+        color: snowy ? hsl(THREE, 0.4 + rng() * 0.05, 0.12, 0.55 + rng() * 0.15) : hsl(THREE, 0.33 + rng() * 0.05, 0.35, 0.2 + rng() * 0.1) }));
+      instanced(ctx, cone, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, flatShading: true }), cones);
+    }
+
+    function streetLamps(ctx, offset, step, color, height) {
+      const { THREE, world, h } = ctx;
+      const post = new THREE.CylinderGeometry(0.07, 0.1, height, 6); post.translate(0, height / 2, 0);
+      const head = new THREE.SphereGeometry(0.28, 10, 8);
+      const posts = [], heads = [];
+      for (let z = -96; z <= 96; z += step) {
+        if (Math.abs(z) < 4) continue;
+        for (const sx of [-1, 1]) {
+          const x = sx * offset, y = h(x, z);
+          posts.push({ x, y, z }); heads.push({ x, y: y + height, z });
+        }
+      }
+      if (ctx.theme.key === 'city') for (let x = -96; x <= 96; x += step) {
+        if (Math.abs(x) < 4) continue;
+        for (const sz of [-1, 1]) { const z = sz * offset, y = h(x, z); posts.push({ x, y, z }); heads.push({ x, y: y + height, z }); }
+      }
+      instanced(ctx, post, new THREE.MeshStandardMaterial({ color: '#2a2d3a', roughness: 0.8 }), posts);
+      instanced(ctx, head, new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 2.5 }), heads, { shadow: false });
+      heads.filter(p => Math.hypot(p.x, p.z) < step * 1.6).slice(0, 4).forEach(p => {
+        const l = new THREE.PointLight(color, 30, 26, 2); l.position.set(p.x, p.y - 0.2, p.z); world.add(l);
+      });
+    }
+
+    // ---------- 텍스처 ----------
+    function windowTexture(THREE, rng) {
+      const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+      const g = c.getContext('2d');
+      g.fillStyle = '#171a26'; g.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) {
+        const x = 8 + i * 30, y = 6 + j * 32;
+        if (rng() < 0.55) g.fillStyle = rng() < 0.7 ? `rgba(255,217,160,${0.5 + rng() * 0.5})` : `rgba(201,226,255,${0.5 + rng() * 0.5})`;
+        else g.fillStyle = '#0b0d16';
+        g.fillRect(x, y, 18, 20);
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      return t;
+    }
+
+    function birchTexture(THREE, rng) {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 256;
+      const g = c.getContext('2d');
+      g.fillStyle = '#e9e9e3'; g.fillRect(0, 0, 64, 256);
+      g.fillStyle = '#2b2b2b';
+      for (let i = 0; i < 22; i++) {
+        const y = rng() * 256, w = 8 + rng() * 30, hh = 2 + rng() * 4, x = rng() * 64;
+        g.beginPath(); g.roundRect(x, y, w, hh, 2); g.fill();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    // ---------- 날씨 입자 ----------
+    const spriteCache = new Map();
+    function spriteTexture(THREE, kind) {
+      if (spriteCache.has(kind)) return spriteCache.get(kind);
+      const c = document.createElement('canvas'); c.width = c.height = 64;
+      const g = c.getContext('2d');
+      if (kind === 'streak') {
+        const grd = g.createLinearGradient(0, 0, 0, 64);
+        grd.addColorStop(0, 'rgba(255,255,255,0)'); grd.addColorStop(0.5, 'rgba(255,255,255,1)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grd; g.fillRect(29, 0, 6, 64);
+      } else {
+        const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(0.45, 'rgba(255,255,255,.75)'); grd.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = grd; g.fillRect(0, 0, 64, 64);
+      }
+      const t = new THREE.CanvasTexture(c);
+      spriteCache.set(kind, t);
+      return t;
+    }
+
+    function makeParticles(THREE, kind, rng) {
+      const cfg = {
+        snow:      { n: 2600, box: [110, 36, 110], size: 0.26, color: '#ffffff', opacity: 0.9, vy: -1.6, sway: 0.6, additive: false, sprite: 'dot' },
+        rain:      { n: 2800, box: [70, 34, 70], size: 0.5, color: '#b5bdd6', opacity: 0.5, vy: -19, sway: 0.0, additive: false, sprite: 'streak' },
+        fireflies: { n: 180, box: [90, 4, 90], size: 0.22, color: '#ffe08a', opacity: 0.95, vy: 0, sway: 0.5, additive: true, sprite: 'dot' },
+      }[kind];
+      const arr = new Float32Array(cfg.n * 3), phase = new Float32Array(cfg.n);
+      for (let i = 0; i < cfg.n; i++) {
+        arr[i * 3] = (rng() - 0.5) * cfg.box[0];
+        arr[i * 3 + 1] = rng() * cfg.box[1] + (kind === 'fireflies' ? 0.6 : 0);
+        arr[i * 3 + 2] = (rng() - 0.5) * cfg.box[2];
+        phase[i] = rng() * 6.28;
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+      const mat = new THREE.PointsMaterial({ color: cfg.color, size: cfg.size, map: spriteTexture(THREE, cfg.sprite), transparent: true, opacity: cfg.opacity,
+        depthWrite: false, sizeAttenuation: true, blending: cfg.additive ? THREE.AdditiveBlending : THREE.NormalBlending });
+      const points = new THREE.Points(geo, mat);
+      points.frustumCulled = false;
+      let t = 0;
+      return {
+        points,
+        update(dt, cam) {
+          t += dt;
+          const p = geo.attributes.position, [bx, by, bz] = cfg.box;
+          for (let i = 0; i < cfg.n; i++) {
+            let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+            if (kind === 'fireflies') {
+              x += Math.sin(t * 0.7 + phase[i]) * dt * cfg.sway;
+              z += Math.cos(t * 0.6 + phase[i] * 1.3) * dt * cfg.sway;
+              y += Math.sin(t * 1.1 + phase[i]) * dt * 0.3;
+            } else {
+              y += cfg.vy * dt;
+              x += Math.sin(t * 1.3 + phase[i]) * dt * cfg.sway;
+              if (y < cam.y - 6) y += by;
+            }
+            if (x < cam.x - bx / 2) x += bx; else if (x > cam.x + bx / 2) x -= bx;
+            if (z < cam.z - bz / 2) z += bz; else if (z > cam.z + bz / 2) z -= bz;
+            if (kind === 'fireflies') { if (y < 0.4) y = 0.4; if (y > by + 1) y = by + 1; }
+            p.setXYZ(i, x, y, z);
+          }
+          p.needsUpdate = true;
+          if (kind === 'fireflies') mat.opacity = 0.6 + 0.35 * Math.sin(t * 2.3);
+        },
+      };
+    }
+
+    // ---------- 페이지 연결 ----------
+    const demo = $('#demo');
+    const canvas = $('#walk-canvas');
+    const form = $('#prompt-form');
+    const input = $('#prompt-input');
+    const ovIdle = $('#ov-idle'), ovBuilding = $('#ov-building'), ovReady = $('#ov-ready'), ovError = $('#ov-error');
+    const hud = $('#hud'), hudPlace = $('#hud-place'), hudHint = $('#hud-hint');
+    const btnWalk = $('#btn-walk'), walkLabel = $('.walk-label', btnWalk);
+    const speedBtns = [...document.querySelectorAll('.speed-btn')];
+    const coursePct = $('#course-pct'), courseFill = $('#course-fill');
+    const PRESETS = [...document.querySelectorAll('.chip')].map(b => b.textContent.trim());
+
+    let world = null, THREE = null, state = 'idle', hintTimer = 0;
+
+    function setState(next) {
+      state = next;
+      ovIdle.hidden = next !== 'idle';
+      ovBuilding.hidden = next !== 'building';
+      ovReady.hidden = next !== 'ready';
+      hud.hidden = next !== 'walking';
+      demo.classList.toggle('is-walking', next === 'walking');
+      if (next === 'walking') {
+        hudHint.classList.remove('is-faded');
+        clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => hudHint.classList.add('is-faded'), 6000);
+      }
+    }
+
+    function showError(msg) {
+      if (msg) $('#error-text').textContent = msg;
+      ovIdle.hidden = ovBuilding.hidden = ovReady.hidden = true;
+      hud.hidden = true;
+      ovError.hidden = false;
+      state = 'error';
+    }
+
+    function setWalking(on) {
+      if (!world) return;
+      world.walking = on;
+      btnWalk.setAttribute('aria-pressed', String(on));
+      btnWalk.classList.toggle('is-walking', on);
+      walkLabel.textContent = on ? '정지' : '걷기';
+    }
+
+    function setSpeed(level) {
+      if (!world) return;
+      world.setSpeed(level);
+      speedBtns.forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.speed) === world.speedLevel)));
+    }
+
+    async function ensureWorld() {
+      if (world) return world;
+      try {
+        THREE = await import('three');
+      } catch (e) {
+        showError('3D 라이브러리를 불러올 수 없습니다. 인터넷 연결을 확인한 뒤 다시 열어 주세요.');
+        throw e;
+      }
+      try {
+        world = new World(THREE, canvas, demo);
+      } catch (e) {
+        showError();
+        throw e;
+      }
+      let lastPct = -1;
+      world.onProgress = (u) => {
+        const pct = Math.floor(u * 100);
+        if (pct !== lastPct) { lastPct = pct; coursePct.textContent = pct + '%'; courseFill.style.width = (u * 100).toFixed(1) + '%'; }
+      };
+      wireControls();
+      return world;
+    }
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    async function open(prompt) {
+      prompt = (prompt || '').trim();
+      if (!prompt) prompt = PRESETS[Math.floor(Math.random() * PRESETS.length)];
+      input.value = prompt;
+
+      setState('building');
+      $('#building-title').textContent = `「${prompt}」`;
+      const steps = [...$('#building-steps').children];
+      steps.forEach(li => li.className = '');
+      demo.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+
+      const stepDelay = reduceMotion ? 120 : 420;
+      let w;
+      for (let i = 0; i < steps.length; i++) {
+        steps[i].classList.add('is-on');
+        if (i === 1) { w = await ensureWorld(); }
+        if (i === 2) { w.build(prompt); w.visible = true; }
+        await sleep(stepDelay);
+        steps[i].classList.replace('is-on', 'is-done');
+      }
+      if (state === 'error') return;
+
+      demo.classList.add('is-open');
+      const t = w.theme;
+      hudPlace.innerHTML = `「${escapeHtml(prompt)}」 <span class="hud-tags">${[t.name, ...t.tags].join(', ')}</span>`;
+      $('#ready-course').textContent = `${t.name} 코스, 한 바퀴 약 ${Math.round(w.courseLength / 10) * 10} m`;
+      setSpeed(3);
+      setWalking(false);
+      setState('ready');
+    }
+
+    function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+    function enter() {
+      if (!world || state !== 'ready') return;
+      setState('walking');
+      setWalking(true);
+      demo.focus({ preventScroll: true });
+    }
+
+    function wireControls() {
+      // 시선: 화면을 끌어서 (마우스·터치 공통)
+      let dragging = false, lx = 0, ly = 0;
+      canvas.addEventListener('pointerdown', e => {
+        if (state !== 'walking') return;
+        dragging = true; lx = e.clientX; ly = e.clientY;
+        canvas.setPointerCapture(e.pointerId);
+        canvas.classList.add('is-dragging');
+      });
+      canvas.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const k = 0.0042;
+        world.look((e.clientX - lx) * k, (e.clientY - ly) * k);
+        lx = e.clientX; ly = e.clientY;
+      });
+      const stopDrag = () => { dragging = false; canvas.classList.remove('is-dragging'); };
+      canvas.addEventListener('pointerup', stopDrag);
+      canvas.addEventListener('pointercancel', stopDrag);
+
+      // 키보드: Space 걷기/정지, 1~5 속도
+      addEventListener('keydown', e => {
+        if (state !== 'walking') return;
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.code === 'Space' && tag === 'BUTTON') return; // 버튼 자체의 클릭에 맡긴다
+        if (e.code === 'Space') { e.preventDefault(); setWalking(!world.walking); }
+        else if (/^Digit[1-5]$/.test(e.code)) { setSpeed(Number(e.code.slice(5))); }
+        else if (e.code === 'ArrowUp') { e.preventDefault(); setSpeed(world.speedLevel + 1); }
+        else if (e.code === 'ArrowDown') { e.preventDefault(); setSpeed(world.speedLevel - 1); }
+      });
+
+      btnWalk.addEventListener('click', () => setWalking(!world.walking));
+      speedBtns.forEach(b => b.addEventListener('click', () => setSpeed(Number(b.dataset.speed))));
+
+      // 보이지 않을 때는 그리지 않는다
+      new IntersectionObserver(([en]) => { world.visible = en.isIntersecting; }, { threshold: 0.05 }).observe(demo);
+    }
+
+    // 이벤트
+    form.addEventListener('submit', e => { e.preventDefault(); open(input.value); });
+    document.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => open(b.textContent)));
+    $('#btn-random').addEventListener('click', () => open(''));
+    $('#btn-enter').addEventListener('click', enter);
+    ovReady.addEventListener('click', e => { if (e.target === ovReady) enter(); });
+    $('#btn-another').addEventListener('click', () => {
+      setWalking(false);
+      input.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+      input.focus({ preventScroll: true }); input.select();
+    });
+    $('#btn-full').addEventListener('click', () => {
+      if (document.fullscreenElement) document.exitFullscreen(); else demo.requestFullscreen?.();
+    });
+    document.addEventListener('fullscreenchange', () => { $('#btn-full').textContent = document.fullscreenElement ? '창 모드' : '전체 화면'; });
+
+    // 주소에 ?walk=문장 이 있으면 바로 연다
+    const q = new URLSearchParams(location.search).get('walk');
+    if (q) open(q);
+  </script>
+</body>
+</html>

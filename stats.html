@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Walk Anywhere — 사람들은 어디를 걷고 싶어 할까</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <style>
+    body { background: var(--dawn); color: var(--dawn-ink); }
+    .wrap { width: min(100% - 2.5rem, 60rem); margin: 0 auto; padding: 3rem 0 5rem; }
+    h1 { font-family: var(--serif); font-weight: 600; font-size: var(--t-3); margin: 0 0 .3rem; }
+    .lede { color: var(--dawn-muted); margin: 0 0 2rem; }
+    .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .75rem; margin-bottom: 2.5rem; }
+    .total { border-top: 1.5px solid rgba(27, 33, 64, .25); padding-top: .6rem; }
+    .total b { display: block; font-family: var(--serif); font-size: var(--t-2); font-weight: 600; line-height: 1.1; }
+    .total span { font-size: var(--t--1); color: var(--dawn-muted); }
+    section { margin-bottom: 2.5rem; }
+    h2 { font-size: var(--t-1); margin: 0 0 .9rem; }
+    .bars { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; }
+    .bars li { display: grid; grid-template-columns: minmax(8rem, 16rem) 1fr auto; gap: .8rem; align-items: center; font-size: var(--t--1); }
+    .bars .bar { height: 10px; border-radius: 5px; background: rgba(27, 33, 64, .12); overflow: hidden; }
+    .bars .bar i { display: block; height: 100%; background: var(--lamp-deep); border-radius: 5px; }
+    .bars .n { font-variant-numeric: tabular-nums; color: var(--dawn-muted); }
+    .empty, .err { color: var(--dawn-muted); }
+    .err { color: #9b2c2c; }
+    table { width: 100%; border-collapse: collapse; font-size: var(--t--1); }
+    td, th { text-align: left; padding: .45rem .4rem; border-bottom: 1px solid rgba(27, 33, 64, .12); }
+    th { color: var(--dawn-muted); font-weight: 600; }
+    a { color: var(--dawn-ink); }
+    .foot { font-size: var(--t--1); color: var(--dawn-muted); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>사람들은 어디를 걷고 싶어 할까</h1>
+    <p class="lede">Walk Anywhere 사용 통계. 어떤 장소를 고르는지, 어떤 속도로 걷는지, 어떤 간판을 누르는지.</p>
+    <div id="out"><p class="empty">불러오는 중</p></div>
+    <p class="foot"><a href="/">첫 화면으로</a></p>
+  </main>
+  <script type="module" src="./js/stats.js"></script>
+</body>
+</html>

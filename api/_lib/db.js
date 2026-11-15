@@ -1,8 +1,13 @@
 // Neon Postgres 연결 (Vercel Storage → Marketplace → Neon 으로 연결하면 DATABASE_URL 이 자동으로 들어온다)
 import { neon } from '@neondatabase/serverless';
+import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
 
 let sql = null;
 let schemaReady = null;
+
+export const ID_RE = /^[0-9A-Za-z가-힣_.-]{2,10}$/;
+export const PW_RE = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*._-]{8,64}$/; // 영문 + 숫자 포함 8자 이상
+export const INITIAL_ADMIN_PASSWORD = 'admin1234';
 
 export function getSql() {
   const url = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.DATABASE_URL_UNPOOLED;
@@ -11,6 +16,18 @@ export function getSql() {
   return sql;
 }
 
+export function hashPassword(pw) {
+  const salt = randomBytes(16).toString('hex');
+  return salt + ':' + scryptSync(pw, salt, 64).toString('hex');
+}
+export function verifyPassword(pw, stored) {
+  if (!stored || !stored.includes(':')) return false;
+  const [salt, hash] = stored.split(':');
+  const a = Buffer.from(hash, 'hex'), b = scryptSync(pw, salt, 64);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+export const newToken = () => randomBytes(24).toString('base64url');
+
 export async function ensureSchema(sql) {
   if (!schemaReady) {
     schemaReady = (async () => {
@@ -18,8 +35,12 @@ export async function ensureSchema(sql) {
         id TEXT PRIMARY KEY,
         nickname TEXT NOT NULL,
         token TEXT NOT NULL,
+        password_hash TEXT,
+        role TEXT NOT NULL DEFAULT 'user',
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash TEXT`;
+      await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user'`;
       await sql`CREATE TABLE IF NOT EXISTS walks (
         id SERIAL PRIMARY KEY,
         user_id TEXT REFERENCES users(id),
@@ -47,9 +68,22 @@ export async function ensureSchema(sql) {
         page TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT now()
       )`;
+      // 관리자 계정: admin / admin1234 (처음 한 번만 만들어진다)
+      await sql`INSERT INTO users (id, nickname, token, password_hash, role)
+                VALUES ('admin', '관리자', ${newToken()}, ${hashPassword(INITIAL_ADMIN_PASSWORD)}, 'admin')
+                ON CONFLICT (id) DO NOTHING`;
     })().catch(e => { schemaReady = null; throw e; });
   }
   return schemaReady;
+}
+
+// 토큰으로 사용자 찾기 (Authorization: Bearer … 또는 body.token)
+export async function userFromToken(sql, req, body = {}) {
+  const auth = req.headers?.authorization || '';
+  const token = (auth.startsWith('Bearer ') ? auth.slice(7) : '') || str(body.token, 80);
+  if (!token) return null;
+  const rows = await sql`SELECT id, nickname, role FROM users WHERE token = ${token}`;
+  return rows[0] || null;
 }
 
 export async function readJson(req) {

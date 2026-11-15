@@ -130,7 +130,7 @@ kbd {
 .speed { display: inline-flex; align-items: center; gap: .25rem; }
 .speed-title, .time-title { font-size: var(--t--1); color: var(--haze); margin-right: .3rem; }
 .speed-btn {
-  width: 2.2rem; height: 2.2rem; border-radius: .55rem;
+  min-width: 2.2rem; height: 2.2rem; padding: 0 .55rem; border-radius: .55rem; font-size: var(--t--1);
   border: 1.5px solid rgba(255, 255, 255, .22); background: transparent; color: var(--snow); font-weight: 600;
   transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 }
@@ -200,6 +200,7 @@ canvas.is-hot { cursor: pointer; }
   .hud-actions { justify-content: flex-start; }
   .hud-bar { right: 1rem; flex-wrap: wrap; gap: .6rem; }
   .speed-title, .time-title { display: none; }
+  .speed-btn { padding: 0 .4rem; font-size: .8rem; }
   .hint { display: none; }
   .place-card { top: auto; bottom: 7.5rem; transform: none; }
 }

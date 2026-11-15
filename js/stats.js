@@ -1,7 +1,7 @@
 const out = document.getElementById('out');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const THEME_NAMES = { meadow: '초원', beach: '해변', forest: '숲', snow: '설원', desert: '사막', city: '도시', village: '옛 동네', mars: '화성' };
-const SPEED_NAMES = { 1: '1 (느린 산책)', 2: '2', 3: '3 (보통)', 4: '4', 5: '5 (빠른 걸음)' };
+const THEME_NAMES = { meadow: '초원', beach: '해변', forest: '숲', snow: '설원', desert: '사막', city: '도시', village: '옛 동네', mars: '화성', park: '공원', mountain: '산길' };
+const SPEED_NAMES = { 1: '느긋이', 2: '천천히', 3: '걷기', 4: '빠르게', 5: '달리기' };
 
 function bars(rows, label, value, fmt = v => String(v)) {
   if (!rows.length) return '<p class="empty">아직 기록이 없습니다.</p>';
@@ -29,8 +29,8 @@ try {
     </div>
     <section><h2>어떤 장소를 고를까</h2>${bars(s.themes || [], r => THEME_NAMES[r.theme] || r.theme, r => r.n, v => `${v}회`)}</section>
     <section><h2>많이 고른 문장</h2>${bars(s.prompts || [], r => r.prompt, r => r.n, v => `${v}회`)}</section>
-    <section><h2>어떤 속도로 걸을까 (걸은 시간)</h2>${bars(speedSec, r => SPEED_NAMES[r.k], r => r.v, mins)}</section>
-    <section><h2>속도 버튼을 누른 횟수</h2>${bars(s.speeds?.picks || [], r => SPEED_NAMES[r.speed], r => r.n, v => `${v}회`)}</section>
+    <section><h2>어떤 걸음으로 걸을까 (걸은 시간)</h2>${bars(speedSec, r => SPEED_NAMES[r.k], r => r.v, mins)}</section>
+    <section><h2>걸음을 바꾼 횟수</h2>${bars(s.speeds?.picks || [], r => SPEED_NAMES[r.speed], r => r.n, v => `${v}회`)}</section>
     <section><h2>시각을 어디로 맞출까</h2>${bars(s.hours || [], r => hourName(r.hour), r => r.n, v => `${v}회`)}</section>
     <section><h2>많이 누른 간판</h2>${bars(s.links || [], r => r.name || r.url, r => r.n, v => `${v}회`)}</section>
     <section><h2>최근 저장된 길</h2>

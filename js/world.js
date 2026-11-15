@@ -4,6 +4,8 @@
 
 import * as THREE from 'three';
 import { pickLinks } from './links.js';
+import { findLandmark } from './landmarks.js';
+import { buildDestination, SIGN_FRONT, CLEAR_RADIUS } from './archetypes.js';
 
 // ---------- 작은 유틸 ----------
 export const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -39,14 +41,20 @@ export const SPEEDS = [1.2, 1.9, 2.8, 4.0, 5.6];
 // sky/sun/hemi 는 '한낮' 기준 값. 시간대에 따라 밤·새벽·노을 팔레트와 섞인다.
 export const THEMES = {
   meadow: { name: '초원', destName: '언덕 위 풍차', dest: 'windmill', sky: ['#5f93d6', '#eadbc9'], fogD: 0.011, ground: '#6f9a56', path: '#8a7a5a', amp: 6, freq: 0.035,
-            props: ['deciduous', 'rocks'], density: 18, surface: 'dirt', curve: 0.03, defaultHour: 10.5,
+            props: ['deciduous', 'grass', 'rocks'], density: 18, surface: 'dirt', curve: 0.03, defaultHour: 10.5, particles: 'motes',
             sun: { color: '#fff1d6', int: 2.2 }, hemi: ['#bcd4ff', '#4d6b3a', 0.9] },
+  park:   { name: '공원', destName: '공원 정자', dest: 'pavilion', sky: ['#5f93d6', '#e6e3dc'], fogD: 0.011, ground: '#5f8f4e', path: '#9a948a', amp: 1.2, freq: 0.03,
+            props: ['deciduous-rows', 'grass', 'buildings-skyline'], density: 14, surface: 'gravel', curve: 0.016, defaultHour: 15, particles: 'motes', lamps: true,
+            sun: { color: '#fff1d6', int: 2.0 }, hemi: ['#bcd4ff', '#3d5b3a', 0.9] },
+  mountain:{ name: '산길', destName: '산장', dest: 'cabin', sky: ['#5c86b3', '#d8dfe6'], fogD: 0.014, ground: '#4a6a42', path: '#6a5a48', amp: 16, freq: 0.022,
+            props: ['conifer', 'rocks', 'grass'], density: 26, surface: 'gravel', curve: 0.03, defaultHour: 9, particles: 'motes',
+            sun: { color: '#eef3e8', int: 2.0 }, hemi: ['#a9c8d8', '#2e4a2a', 0.85] },
   beach:  { name: '해변', destName: '해변 등대', dest: 'lighthouse', sky: ['#4f98e0', '#dfe9f0'], fogD: 0.0105, ground: '#e3cfa3', path: '#cdb48a', amp: 1.6, freq: 0.03,
             water: { level: -0.3, base: 0.6, slope: 0.1, color: '#2f7f9f' },
             props: ['palms', 'rocks'], density: 7, surface: 'sand', curve: 0.012, defaultHour: 17.5,
             sun: { color: '#fff1d6', int: 2.4 }, hemi: ['#cfe3ff', '#8a7a5a', 0.8] },
   forest: { name: '숲', destName: '숲속 오두막', dest: 'cabin', sky: ['#5c86b3', '#c7d5c1'], fogD: 0.02, ground: '#3f6b3a', path: '#5e4b3a', amp: 5, freq: 0.04,
-            props: ['conifer', 'deciduous', 'rocks'], density: 34, surface: 'dirt', curve: 0.03, defaultHour: 10,
+            props: ['conifer', 'deciduous', 'grass', 'rocks'], density: 34, surface: 'dirt', curve: 0.03, defaultHour: 10, particles: 'motes',
             sun: { color: '#e9f1d8', int: 1.8 }, hemi: ['#a9c8d8', '#2e4a2a', 0.8] },
   snow:   { name: '설원', destName: '눈 덮인 산장', dest: 'cabin', sky: ['#8ea2b8', '#dfe5ec'], fogD: 0.016, ground: '#eef2f6', path: '#cfd7df', amp: 4, freq: 0.03,
             props: ['birch', 'conifer-snow', 'rocks'], density: 22, particles: 'snow', surface: 'snow', curve: 0.025, defaultHour: 11,
@@ -86,9 +94,17 @@ const THEME_RULES = [
 ];
 
 export function interpret(prompt) {
-  const key = THEME_RULES.find(([, re]) => re.test(prompt))?.[0] ?? 'meadow';
+  const lm = findLandmark(prompt);
+  const key = lm ? lm.env : (THEME_RULES.find(([, re]) => re.test(prompt))?.[0] ?? 'meadow');
   const t = JSON.parse(JSON.stringify(THEMES[key]));
   t.key = key; t.tags = [];
+  if (lm) {
+    Object.assign(t, lm.over || {});
+    t.dest = lm.dest; t.destParams = lm.params || {}; t.destName = lm.title;
+    t.landmark = { id: lm.id, title: lm.title, country: lm.country };
+    if (lm.hour != null) t.defaultHour = lm.hour;
+    t.tags.push(lm.country);
+  }
 
   const rain   = /(^|\s)비(\s|가|에|오는|내린|내리|$)|빗|장마|우산|젖은/.test(prompt);
   const fog    = /안개|흐린|구름|뿌연/.test(prompt);
@@ -98,14 +114,17 @@ export function interpret(prompt) {
   const hourRule = HOUR_RULES.find(([re]) => re.test(prompt));
   t.startHour = hourRule ? hourRule[1] : t.defaultHour;
   if (hourRule) t.tags.push(hourLabel(t.startHour));
-  if (/밤|야경|심야|달빛|별빛|자정|한밤/.test(prompt) && !t.particles && key !== 'snow' && key !== 'city') t.particles = 'fireflies';
+  if (/밤|야경|심야|달빛|별빛|자정|한밤/.test(prompt) && (!t.particles || t.particles === 'motes') && key !== 'snow' && key !== 'city') t.particles = 'fireflies';
+  if (t.startHour >= 20 || t.startHour < 5) { if (t.particles === 'motes') t.particles = 'fireflies'; }
 
   if (rain) { t.particles = 'rain'; t.fogD *= 1.8; t.wet = true; t.rain = true; t.tags.push('비'); }
   if (fog) { t.fogD = Math.max(t.fogD * 2.2, 0.03); t.fog = true; t.tags.push('안개'); }
+  if (/계곡|시냇|개울|강가|강변|폭포|하천|냇가/.test(prompt)) t.stream = true;
 
   t.crowd = crowd;
   if (crowd && key !== 'city') t.tags.push('사람 소리');
-  t.links = pickLinks(t);
+  t.links = lm ? [...lm.links, ...pickLinks(t)] : pickLinks(t);
+  if (!t.dest) t.dest = 'windmill';
   return t;
 }
 
@@ -358,8 +377,8 @@ export class World {
     this.scene.add(sun); this.scene.add(sun.target);
     this.sunLight = sun; this.sunDir = new THREE.Vector3(0, 1, 0);
 
-    if (theme.street) {
-      const col = theme.street === 'city' ? '#ffd9a0' : '#ffb45a';
+    if (theme.street || theme.lamps) {
+      const col = theme.street === 'city' ? '#ffd9a0' : theme.street ? '#ffb45a' : '#ffe0b0';
       for (let i = 0; i < 3; i++) { const l = new THREE.PointLight(col, 26, 24, 2); this.scene.add(l); this.pointLights.push(l); }
     }
     this.hour = theme.startHour;
@@ -478,7 +497,7 @@ export class World {
       // 목적지가 있으면 길은 목적지 앞에서 끝난다
       if (L == null || a0 < L + 4) this.addRibbon(a0, L == null ? a0 + 32 : Math.min(a0 + 32, L + 4));
       for (let a = a0; a < a0 + 32; a++) {
-        const nearDest = L != null && a > L - 34;
+        const nearDest = L != null && a > L - 34 - ((CLEAR_RADIUS[t.dest] ?? 24) - 24);
         if (L != null && a === L) this.addDestination(L);
         if (nearDest) continue;
         if (t.street === 'city') {
@@ -487,9 +506,9 @@ export class World {
         } else if (t.street === 'village') {
           if (a % 10 === 0) this.addHousePair(a);
           if (a % 14 === 0) this.addLamps(a, 5.2, 3.2, '#ffb45a');
-        } else if (a >= this.nextLandmark) {
-          this.addSignpost(a);
-          this.nextLandmark = a + 70 + Math.floor(this.rng() * 50);
+        } else {
+          if (t.lamps && a % 18 === 0) this.addLamps(a, 4.2, 3.6, '#ffe0b0');
+          if (a >= this.nextLandmark) { this.addSignpost(a); this.nextLandmark = a + 70 + Math.floor(this.rng() * 50); }
         }
       }
       this.alongCursor = a0 + 32;
@@ -656,9 +675,9 @@ export class World {
   addDestination(L) {
     const p = this.place(L + 14, 1, 0);
     const link = this.theme.links[0];
-    const root = makeDestination(this.theme, this.shared, this.rng);
+    const root = buildDestination(this.theme.dest, this.theme.destParams, this.shared, this.rng);
     root.position.set(p.x, p.y, p.z); root.rotation.y = p.th;
-    const sign = makeSignBoard({ name: this.theme.destName, tag: this.prompt }, { glow: true, width: 3.2 });
+    const sign = makeSignBoard({ name: this.theme.destName, tag: this.theme.landmark ? this.theme.landmark.country : this.prompt }, { glow: true, width: 3.2 });
     sign.position.set(0, 2.3, SIGN_FRONT[this.theme.dest] ?? 6); // 건물 앞, 걸어오는 쪽
     root.add(sign);
     root.userData.link = link;
@@ -732,7 +751,7 @@ export class World {
           const x = x0 + rng() * CHUNK, z = z0 + rng() * CHUNK;
           const q = this.path.nearestIn(near, x, z);
           if (q.d < clear) continue;
-          if (this.tripLength != null && Math.abs(q.arc - this.tripLength - 14) < 32 && q.d < 24) continue; // 목적지 둘레는 비운다
+          if (this.tripLength != null) { const cr = CLEAR_RADIUS[this.theme.dest] ?? 24; if (Math.abs(q.arc - this.tripLength - 14) < cr + 8 && q.d < cr) continue; } // 목적지 둘레는 비운다
           const y = this.heightFrom(x, z, q.d, q.side);
           if (t.water && y < 0.45) continue;
           if (filter && !filter(x, y, z, q)) continue;
@@ -803,7 +822,7 @@ export class World {
     }
     const eye = this.groundY(p.x, p.z) + 1.7;
     this.camY = lerp(this.camY, eye, 1 - Math.exp(-dt * 10));
-    let y = this.camY + (reduceMotion ? 0 : Math.sin(this.bob) * 0.03 * Math.min(1, moving / 3));
+    let y = this.camY + (reduceMotion ? 0 : Math.abs(Math.sin(this.bob)) * 0.05 * Math.min(1, moving / 3));
 
     let pitchOffset = 0, fov = 72;
     if (this.entry) {
@@ -813,8 +832,10 @@ export class World {
       if (e2 >= 1) this.entry = null;
     }
     if (this.camera.fov !== fov) { this.camera.fov = fov; this.camera.updateProjectionMatrix(); }
-    this.camera.position.set(p.x, y, p.z);
-    this.camera.rotation.set(this.pitch + pitchOffset, this.bodyYaw + this.headYaw, 0);
+    const sway = reduceMotion ? 0 : Math.sin(this.bob * 0.5) * 0.028 * Math.min(1, moving / 3);
+    const yaw = this.bodyYaw + this.headYaw;
+    this.camera.position.set(p.x + Math.cos(yaw) * sway, y, p.z - Math.sin(yaw) * sway);
+    this.camera.rotation.set(this.pitch + pitchOffset, yaw, reduceMotion ? 0 : Math.sin(this.bob * 0.5) * 0.012 * Math.min(1, moving / 3));
 
     this.updateChunks(2);
 
@@ -834,7 +855,7 @@ export class World {
       pa.needsUpdate = true;
       this.water.geometry.computeVertexNormals();
     }
-    if (this.particles) this.particles.update(dt, this.camera.position, this.lampOn);
+    if (this.particles) this.particles.update(dt, this.camera.position, this.particles.kind === 'motes' ? this.daylight : this.lampOn);
     if (this.destination?.root) {
       const r = this.destination.root;
       if (r.userData.blades) r.userData.blades.rotation.z += dt * 0.5;
@@ -896,6 +917,7 @@ function makeSharedAssets(theme, rng) {
     armH: (() => { const g = new THREE.CylinderGeometry(0.22, 0.26, 1.1, 7); g.rotateZ(Math.PI / 2); g.translate(0.55, 0, 0); return g; })(),
     armV: (() => { const g = new THREE.CylinderGeometry(0.22, 0.24, 1.3, 7); g.translate(1.1, 0.65, 0); return g; })(),
     rock: new THREE.DodecahedronGeometry(1, 0),
+    tuft: (() => { const g = new THREE.ConeGeometry(0.22, 0.7, 5); g.translate(0, 0.33, 0); return g; })(),
     boulder: new THREE.DodecahedronGeometry(1, 1),
     flatWhite: new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, flatShading: true }),
     white: new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9 }),
@@ -942,6 +964,31 @@ const hsl = (h, s, l) => new THREE.Color().setHSL(h, s, l);
 
 const PROPS = {
   deciduous(ctx) { treesDeciduous(ctx, ctx.theme.density, 3.5); },
+  // 길가 풀숲: 길 바로 옆 띠에만 빽빽하게. 지나가는 느낌을 만든다.
+  grass(ctx) {
+    const { rng, shared, theme } = ctx;
+    const items = ctx.scatter(90, 0.8, (x, y, z, q) => q.d < 7).map(p => ({ ...p, ry: rng() * 6.28, s: [0.6 + rng() * 0.7, 0.4 + rng() * 0.5, 0.6 + rng() * 0.7],
+      color: hsl(0.2 + rng() * 0.12, 0.45, (theme.key === 'mountain' ? 0.26 : 0.32) + rng() * 0.14) }));
+    instanced(ctx, shared.tuft, shared.flatWhite, items, { shadow: false });
+    const flowers = ctx.scatter(10, 1.2, (x, y, z, q) => q.d < 6).map(p => ({ ...p, y: p.y + 0.3, s: 0.12 + rng() * 0.08, color: [new THREE.Color('#ffd166'), new THREE.Color('#ffffff'), new THREE.Color('#f28cb1'), new THREE.Color('#9b5cff')][Math.floor(rng() * 4)] }));
+    instanced(ctx, shared.lampHead, shared.flatWhite, flowers, { shadow: false });
+  },
+  'deciduous-rows'(ctx) { // 가로수: 길 양옆 일정 거리
+    const { rng, shared } = ctx;
+    const pts = ctx.scatter(ctx.theme.density, 4.5, (x, y, z, q) => q.d < 9);
+    const trunks = pts.map(p => ({ ...p, ry: rng() * 6.28, s: [1, 1 + rng() * 0.4, 1] }));
+    instanced(ctx, shared.trunk, shared.trunkMat, trunks);
+    instanced(ctx, shared.canopy, shared.flatWhite, trunks.map(t => { const r = 2.2 + rng() * 0.8; return { x: t.x, y: t.y + 2.8 * t.s[1], z: t.z, s: [r, r * 0.9, r], color: hsl(0.25 + rng() * 0.08, 0.4, 0.32 + rng() * 0.1) }; }));
+    treesDeciduous(ctx, Math.round(ctx.theme.density * 0.4), 12);
+  },
+  'buildings-skyline'(ctx) { // 공원 너머 멀리 보이는 건물들
+    const { rng, shared, group } = ctx;
+    for (const p of ctx.scatter(2, 60)) {
+      const w = 10 + rng() * 8, hgt = 14 + rng() * 30;
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, hgt, w), new THREE.MeshStandardMaterial({ map: shared.windowTex, color: '#8a90a0', roughness: 0.8 }));
+      mesh.position.set(p.x, p.y + hgt / 2, p.z); mesh.userData.own = true; mesh.userData.ownMat = true; mesh.castShadow = true; group.add(mesh);
+    }
+  },
   'deciduous-far'(ctx) { treesDeciduous(ctx, ctx.theme.density, 30); },
   conifer(ctx) { treesConifer(ctx, ctx.theme.density, false); },
   'conifer-snow'(ctx) { treesConifer(ctx, Math.round(ctx.theme.density * 0.45), true); },
@@ -1029,89 +1076,6 @@ function treesConifer(ctx, count, snowy) {
   instanced(ctx, shared.cone, shared.flatWhite, cones);
 }
 
-// ---------- 목적지 건물 ----------
-// 걸어오는 사람은 로컬 +z 쪽에서 다가온다. 간판은 건물 정면보다 조금 앞에 둔다.
-const SIGN_FRONT = { lighthouse: 8, cabin: 7, dome: 7.5, tower: 9.5, gate: 3.5, habitat: 9.8, windmill: 5 };
-function own(mesh, ownMat = true) { mesh.userData.own = true; mesh.userData.ownMat = ownMat; mesh.castShadow = true; mesh.receiveShadow = true; return mesh; }
-function mat(color, extra = {}) { return new THREE.MeshStandardMaterial({ color, roughness: 0.85, ...extra }); }
-function makeDestination(theme, shared, rng) {
-  const root = new THREE.Group();
-  const add = (geo, m, x, y, z) => { const mesh = own(new THREE.Mesh(geo, m)); mesh.position.set(x, y, z); root.add(mesh); return mesh; };
-  switch (theme.dest) {
-    case 'lighthouse': {
-      add(new THREE.CylinderGeometry(1.9, 2.5, 14, 20), mat('#f1efe9'), 0, 7, 0);
-      for (const y of [3, 7.5, 12]) add(new THREE.CylinderGeometry(2.42 - (y / 14) * 0.5, 2.5 - (y / 14) * 0.5, 1.2, 20), mat('#c8392b'), 0, y, 0);
-      add(new THREE.CylinderGeometry(1.7, 1.7, 2.2, 16), mat('#ffe9a0', { emissive: '#ffe9a0', emissiveIntensity: 1.4, transparent: true, opacity: 0.9 }), 0, 15.1, 0);
-      add(new THREE.ConeGeometry(2.1, 1.8, 16), mat('#c8392b'), 0, 17.1, 0);
-      add(new THREE.BoxGeometry(5, 3, 4), mat('#e6e1d4'), 0, 1.5, 4.5);
-      add(new THREE.ConeGeometry(3.8, 1.6, 4), mat('#3b3844', { flatShading: true }), 0, 3.8, 4.5).rotation.y = Math.PI / 4;
-      const light = new THREE.PointLight('#ffe9a0', 60, 60, 2); light.position.set(0, 15.2, 0); root.add(light); root.userData.light = light;
-      break;
-    }
-    case 'cabin': {
-      const snow = theme.key === 'snow';
-      add(new THREE.BoxGeometry(8, 3.6, 6.5), mat(snow ? '#5a4030' : '#6b4a2e'), 0, 1.8, 0);
-      const roof = add(new THREE.ConeGeometry(6.2, 2.8, 4), mat(snow ? '#e8edf2' : '#3b3844', { flatShading: true }), 0, 5, 0);
-      roof.rotation.y = Math.PI / 4; roof.scale.set(1.25, 1, 1);
-      add(new THREE.BoxGeometry(0.9, 2.2, 0.9), mat('#55514a'), 2.4, 5.4, -1);
-      add(new THREE.PlaneGeometry(1.2, 2.2), mat('#2e1f14'), 0, 1.1, 3.26);
-      for (const x of [-2.4, 2.4]) add(new THREE.PlaneGeometry(1.2, 1.1), mat('#ffb45a', { emissive: '#ffb45a', emissiveIntensity: 1.4 }), x, 2, 3.26);
-      add(new THREE.BoxGeometry(9, 0.3, 2.4), mat(snow ? '#4a3626' : '#5b4030'), 0, 0.15, 4.4);
-      break;
-    }
-    case 'dome': {
-      add(new THREE.SphereGeometry(5.5, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), mat('#d9b887'), 0, 0, 0);
-      add(new THREE.BoxGeometry(2.4, 3.2, 1.6), mat('#2e1f14'), 0, 1.6, 5.2);
-      add(new THREE.CircleGeometry(4, 24).rotateX(-Math.PI / 2), mat('#2f7f9f', { roughness: 0.2, metalness: 0.2 }), 8.5, 0.08, 1);
-      for (const [x, z] of [[11.5, -1.5], [7, -4.5]]) {
-        const t = add(shared.pTrunk, shared.pTrunkMat, x, 0, z); t.userData.own = false; t.userData.ownMat = false; t.rotation.z = (rng() - 0.5) * 0.3;
-        for (let i = 0; i < 7; i++) { const l = new THREE.Mesh(shared.leaf, shared.leafMat); l.position.set(x, 7.5, z); l.rotation.order = 'YXZ'; l.rotation.set(0.45, (i / 7) * 6.28, 0); l.castShadow = true; root.add(l); }
-      }
-      break;
-    }
-    case 'tower': {
-      const tex = shared.windowTex.clone(); tex.repeat.set(4, 20); tex.needsUpdate = true;
-      const side = new THREE.MeshStandardMaterial({ map: tex, emissiveMap: tex, emissive: '#f5e6c8', emissiveIntensity: 0.9, roughness: 0.75 });
-      const top = mat('#1a1d2b');
-      const body = own(new THREE.Mesh(new THREE.BoxGeometry(10, 58, 10), [side, side, top, top, side, side])); body.position.y = 29; root.add(body);
-      add(new THREE.CylinderGeometry(0.3, 0.5, 12, 8), mat('#9aa3ad'), 0, 64, 0);
-      add(new THREE.TorusGeometry(6.5, 0.4, 10, 40).rotateX(Math.PI / 2), mat('#2ee6ff', { emissive: '#2ee6ff', emissiveIntensity: 2 }), 0, 58.5, 0);
-      add(new THREE.BoxGeometry(14, 4, 14), mat('#23283a'), 0, 2, 0);
-      add(new THREE.BoxGeometry(3, 3.2, 0.3), mat('#ffd166', { emissive: '#ffd166', emissiveIntensity: 1.2 }), 0, 1.8, 7.1);
-      break;
-    }
-    case 'gate': {
-      for (const x of [-4.5, 4.5]) add(new THREE.BoxGeometry(0.8, 6, 0.8), mat('#7a3b2a'), x, 3, 0);
-      add(new THREE.BoxGeometry(11, 1.1, 0.9), mat('#7a3b2a'), 0, 5.8, 0);
-      add(new THREE.BoxGeometry(12.5, 0.45, 2), mat('#3b3844'), 0, 6.6, 0);
-      for (const x of [-3, 0, 3]) add(new THREE.SphereGeometry(0.35, 10, 8), mat('#ffb45a', { emissive: '#ffb45a', emissiveIntensity: 2 }), x, 4.9, 0.6);
-      for (const [x, c] of [[-7, '#c8392b'], [7, '#2f6fa0']]) {
-        add(new THREE.BoxGeometry(3.2, 1, 1.6), mat('#a09484'), x, 0.5, -3);
-        const aw = add(new THREE.PlaneGeometry(3.6, 2), mat(c, { side: THREE.DoubleSide }), x, 2.3, -2.6); aw.rotation.x = -0.9;
-      }
-      const light = new THREE.PointLight('#ffb45a', 30, 30, 2); light.position.set(0, 4.5, 1.5); root.add(light); root.userData.light = light;
-      break;
-    }
-    case 'habitat': {
-      add(new THREE.SphereGeometry(6.5, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), mat('#cfe3ff', { transparent: true, opacity: 0.45, emissive: '#8fb7ff', emissiveIntensity: 0.3, roughness: 0.2 }), 0, 0, 0);
-      add(new THREE.BoxGeometry(3.2, 2.8, 3.4), mat('#9aa3ad'), 0, 1.4, 6.4);
-      add(new THREE.CylinderGeometry(0.1, 0.15, 7, 6), mat('#9aa3ad'), 5, 3.5, -3);
-      add(new THREE.SphereGeometry(0.3, 8, 8), mat('#ff4a3a', { emissive: '#ff4a3a', emissiveIntensity: 2.5 }), 5, 7.2, -3);
-      add(new THREE.BoxGeometry(5, 0.3, 4), mat('#2b3a5a', { metalness: 0.4, roughness: 0.4 }), -8, 2.4, 0).rotation.z = 0.35;
-      break;
-    }
-    default: { // windmill
-      add(new THREE.CylinderGeometry(1.7, 2.4, 9, 16), mat('#d9d3c4'), 0, 4.5, 0);
-      add(new THREE.ConeGeometry(2.2, 2.2, 16), mat('#5b4030'), 0, 10.1, 0);
-      const hub = new THREE.Group(); hub.position.set(0, 8.6, 2.1);
-      for (let i = 0; i < 4; i++) { const b = own(new THREE.Mesh(new THREE.BoxGeometry(0.5, 7, 0.15), mat('#f1efe9'))); b.position.y = 3.5; const g = new THREE.Group(); g.rotation.z = (i / 4) * Math.PI * 2; g.add(b); hub.add(g); }
-      root.add(hub); root.userData.blades = hub;
-      add(new THREE.PlaneGeometry(1, 2), mat('#2e1f14'), 0, 1, 2.42);
-    }
-  }
-  return root;
-}
-
 // ---------- 간판 ----------
 function makeSignBoard(link, { glow = false, width = 2.2, wood = false } = {}) {
   const c = document.createElement('canvas'); c.width = 512; c.height = 256;
@@ -1191,11 +1155,13 @@ function makeParticles(kind, rng) {
     snow:      { n: 2600, box: [110, 36, 110], size: 0.26, color: '#ffffff', opacity: 0.9, vy: -1.6, sway: 0.6, additive: false, sprite: 'dot' },
     rain:      { n: 2800, box: [70, 34, 70], size: 0.5, color: '#b5bdd6', opacity: 0.5, vy: -19, sway: 0.0, additive: false, sprite: 'streak' },
     fireflies: { n: 180, box: [90, 4, 90], size: 0.22, color: '#ffe08a', opacity: 0.95, vy: 0, sway: 0.5, additive: true, sprite: 'dot' },
+    motes:     { n: 160, box: [36, 2.4, 36], size: 0.06, color: '#fff0c8', opacity: 0.32, vy: 0, sway: 0.35, additive: true, sprite: 'dot' },
   }[kind];
+  const drifting = kind === 'fireflies' || kind === 'motes';
   const arr = new Float32Array(cfg.n * 3), phase = new Float32Array(cfg.n);
   for (let i = 0; i < cfg.n; i++) {
     arr[i * 3] = (rng() - 0.5) * cfg.box[0];
-    arr[i * 3 + 1] = rng() * cfg.box[1] + (kind === 'fireflies' ? 0.6 : 0);
+    arr[i * 3 + 1] = rng() * cfg.box[1] + (kind === 'fireflies' || kind === 'motes' ? 0.6 : 0);
     arr[i * 3 + 2] = (rng() - 0.5) * cfg.box[2];
     phase[i] = rng() * 6.28;
   }
@@ -1212,7 +1178,7 @@ function makeParticles(kind, rng) {
       const p = geo.attributes.position, [bx, by, bz] = cfg.box;
       for (let i = 0; i < cfg.n; i++) {
         let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-        if (kind === 'fireflies') {
+        if (drifting) {
           x += Math.sin(t * 0.7 + phase[i]) * dt * cfg.sway; z += Math.cos(t * 0.6 + phase[i] * 1.3) * dt * cfg.sway; y += Math.sin(t * 1.1 + phase[i]) * dt * 0.3;
         } else {
           y += cfg.vy * dt; x += Math.sin(t * 1.3 + phase[i]) * dt * cfg.sway;
@@ -1220,11 +1186,12 @@ function makeParticles(kind, rng) {
         }
         if (x < cam.x - bx / 2) x += bx; else if (x > cam.x + bx / 2) x -= bx;
         if (z < cam.z - bz / 2) z += bz; else if (z > cam.z + bz / 2) z -= bz;
-        if (kind === 'fireflies') { const base = cam.y - 1.2; if (y < base) y = base; if (y > base + by + 1) y = base + by + 1; }
+        if (drifting) { const base = cam.y - (kind === 'motes' ? 1.6 : 1.2); if (y < base) y = base; if (y > base + by + (kind === 'motes' ? 0 : 1)) y = base + by; }
         p.setXYZ(i, x, y, z);
       }
       p.needsUpdate = true;
       if (kind === 'fireflies') mat.opacity = (0.6 + 0.35 * Math.sin(t * 2.3)) * dim;
+      if (kind === 'motes') mat.opacity = cfg.opacity * dim;
     },
   };
 }

@@ -1,16 +1,16 @@
 // POST /api/feedback { message, contact?, page? } → DB 에 저장하고, RESEND_API_KEY 가 있으면 FEEDBACK_TO 로 메일도 보낸다
-// GET  /api/feedback?key=ADMIN_KEY                  → 최근 불편사항 (관리자용)
-import { getSql, ensureSchema, readJson, send, str } from './_lib/db.js';
+// GET  /api/feedback  (Authorization: Bearer 관리자 토큰) → 최근 불편사항
+import { getSql, ensureSchema, readJson, send, str, userFromToken } from './_lib/db.js';
 
 const TO = process.env.FEEDBACK_TO || 'kwoos333@naver.com';
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    const url = new URL(req.url, 'http://x');
-    if (!process.env.ADMIN_KEY || url.searchParams.get('key') !== process.env.ADMIN_KEY) return send(res, 403, { error: 'forbidden' });
     const sql = getSql(); if (!sql) return send(res, 503, { error: 'db_not_configured' });
     await ensureSchema(sql);
-    const rows = await sql`SELECT id, message, contact, page, created_at FROM feedback ORDER BY created_at DESC LIMIT 100`;
+    const me = await userFromToken(sql, req);
+    if (!me || me.role !== 'admin') return send(res, 403, { error: 'forbidden', message: '관리자만 볼 수 있습니다.' });
+    const rows = await sql`SELECT id, message, contact, page, created_at FROM feedback ORDER BY created_at DESC LIMIT 200`;
     return send(res, 200, { feedback: rows });
   }
   if (req.method !== 'POST') { res.setHeader('Allow', 'GET, POST'); return send(res, 405, { error: 'method_not_allowed' }); }

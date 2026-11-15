@@ -2,6 +2,11 @@
 // 파일 없이 Web Audio 로 즉석 합성한다: 표면별 발소리, 장소별 환경음(파도·바람·새·귀뚜라미·비·도시·웅성거림).
 // 사람은 보이지 않지만 시장·거리에서는 사람들 소리가 깔린다.
 
+const FILES = {
+  waves: 'waves.ogg', birds: 'birds.ogg', rain: 'rain.ogg', wind: 'wind.ogg', windOpen: 'wind-open.ogg',
+  crowd: 'crowd.ogg', crickets: 'crickets.ogg', stream: 'stream.ogg', forest: 'forest.ogg',
+};
+
 export class Ambience {
   constructor() {
     this.ctx = null;
@@ -10,6 +15,42 @@ export class Ambience {
     this.timers = [];
     this.theme = null;
     this.stepPan = 1;
+    this.buffers = new Map();
+  }
+
+  // ---------- 녹음 파일 (audio/ 폴더, 출처는 audio/CREDITS.md) ----------
+  loadBuffer(name) {
+    if (!this.buffers.has(name)) {
+      this.buffers.set(name, fetch(`/audio/${FILES[name]}`)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+        .then(ab => this.ctx.decodeAudioData(ab))
+        .catch(e => { this.buffers.delete(name); throw e; }));
+    }
+    return this.buffers.get(name);
+  }
+  // 파일을 겹쳐 이어 붙여 끊김 없이 반복. 못 불러오면 합성음으로 대신한다.
+  fileLayer(kind, name, base, fallback) {
+    const L = this.layer(kind, base);
+    const ctx = this.ctx, XF = 1.5;
+    this.loadBuffer(name).then(buf => {
+      if (L.stopped) return;
+      let next = ctx.currentTime + 0.05;
+      const schedule = () => {
+        if (L.stopped) return;
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const g = ctx.createGain();
+        const end = next + buf.duration;
+        g.gain.setValueAtTime(0, next); g.gain.linearRampToValueAtTime(1, next + XF);
+        g.gain.setValueAtTime(1, end - XF); g.gain.linearRampToValueAtTime(0, end);
+        src.connect(g); g.connect(L.gain);
+        src.start(next); src.stop(end + 0.05);
+        L.nodes.push(src, g);
+        next = end - XF;
+        L.timer = setTimeout(schedule, Math.max(100, (next - ctx.currentTime - 0.6) * 1000));
+      };
+      schedule();
+    }).catch(() => { if (!L.stopped && fallback) this.layers.push(fallback()); });
+    return L;
   }
 
   // 사용자 제스처 뒤에 한 번 호출
@@ -48,16 +89,22 @@ export class Ambience {
     const add = (layer) => { this.layers.push(layer); };
     const k = theme.key;
     const night = theme.startHour >= 20 || theme.startHour < 5;
-    const windAmt = { snow: 0.5, desert: 0.45, mars: 0.35, meadow: 0.22, forest: 0.16, beach: 0.3, village: 0.1, city: 0.08 }[k] ?? 0.2;
-    add(this.wind(windAmt, k === 'mars' ? 160 : k === 'snow' ? 320 : 420));
-    if (theme.water || k === 'beach') add(this.waves(0.5));
-    if (theme.rain) add(this.rain(0.45));
-    if (k === 'city') { add(this.traffic(0.35)); add(this.crowd(0.18)); }
-    else if (theme.crowd) add(this.crowd(0.4));
-    if (!theme.rain && (k === 'forest' || k === 'meadow' || k === 'village' || k === 'beach')) {
-      if (night) add(this.crickets(0.25)); else add(this.birds(k === 'forest' ? 0.5 : 0.3, k === 'beach'));
+    const woods = k === 'forest' || k === 'meadow' || k === 'village' || k === 'park' || k === 'mountain';
+    const windAmt = { snow: 0.45, desert: 0.4, mars: 0.3, meadow: 0.22, forest: 0.18, beach: 0.28, village: 0.12, city: 0.08, park: 0.14, mountain: 0.3 }[k] ?? 0.2;
+    // 바람: 숲이면 나뭇잎 바람, 트인 곳이면 벌판 바람. 화성은 합성 저음 바람만.
+    if (k === 'mars') add(this.wind(windAmt, 160));
+    else add(this.fileLayer('wind', woods ? 'wind' : 'windOpen', windAmt, () => this.wind(windAmt, 420)));
+    if (k === 'forest' || k === 'mountain') add(this.fileLayer('forest', 'forest', 0.25));
+    if (theme.water || k === 'beach') add(this.fileLayer('waves', 'waves', 0.55, () => this.waves(0.5)));
+    if (theme.stream) add(this.fileLayer('stream', 'stream', 0.4));
+    if (theme.rain) add(this.fileLayer('rain', 'rain', 0.5, () => this.rain(0.45)));
+    if (k === 'city') { add(this.traffic(0.3)); add(this.fileLayer('crowd', 'crowd', 0.22, () => this.crowd(0.18))); }
+    else if (theme.crowd) { add(this.fileLayer('crowd', 'crowd', 0.45, () => this.crowd(0.4))); add(this.crowd(0.12)); }
+    if (!theme.rain && (woods || k === 'beach')) {
+      add(this.fileLayer('birds', 'birds', k === 'forest' ? 0.45 : 0.3, () => this.birds(0.3)));
+      add(this.fileLayer('crickets', 'crickets', 0.35, () => this.crickets(0.25)));
+      if (k === 'beach') add(this.birds(0.25, true));
     }
-    if (k === 'village' && night) add(this.crickets(0.2));
     this.setDaylight(this.lastDaylight ?? 1);
   }
 
@@ -103,7 +150,9 @@ export class Ambience {
     gain.connect(this.ambGain);
     gain.gain.setTargetAtTime(base, ctx.currentTime + 0.05, 1.2);
     const nodes = [];
-    return { kind, base, gain, nodes, stop() { nodes.forEach(n => { try { n.stop?.(); } catch {} try { n.disconnect(); } catch {} }); try { gain.disconnect(); } catch {} } };
+    const L = { kind, base, gain, nodes, stopped: false, timer: 0, sub: null,
+      stop() { L.stopped = true; clearTimeout(L.timer); L.sub?.stop(); nodes.forEach(n => { try { n.stop?.(); } catch {} try { n.disconnect(); } catch {} }); try { gain.disconnect(); } catch {} } };
+    return L;
   }
   noiseSource(buf = this.noise) { const s = this.ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.start(0, Math.random() * 1.5); return s; }
   lfo(target, freq, depth, offset = 0) {
